@@ -8,6 +8,7 @@ using namespace std;
 
 class ComSys{
 public:
+
 	ComSys();
 	//checks to see if any collisions happened or will happen
 	void checkViolations();
