@@ -3,8 +3,9 @@
 #include "Operator.h"
 #include "ComSys.h"
 
-using namespace std;
+#define MAX_AIRCRAFTS 120
 
+using namespace std;
 
 class Radar{
 public:
@@ -12,12 +13,11 @@ public:
 
 	void addAircraft(Aircraft*);
 	void scanForAircrafts();
-	Aircraft** getAircrafts();
-	int getTotalAircrafts();
-
+	void storeAirSpaceHistory(std::string s);
 
 private:
-
+	std::string History = "History.txt";
+	vector<Aircraft> Aircrafts;
 
 };
 
