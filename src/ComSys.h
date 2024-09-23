@@ -10,11 +10,11 @@ class ComSys{
 public:
 	ComSys();
 	//checks to see if any collisions happened or will happen
-	std::vector<int> checkViolations();
+	void checkViolations();
 	//sends an alert to operator about current and future safety violation
-	void operatorAlert();
+	void operatorAlert(int id_1, int id_2);
 	//sends all known aircrafts to the Display
-	std::vector<int> sendDataDisplay();
+	void sendDataDisplay();
 
 	//Common setters & getters
 	void setTotalNumAircraft();
@@ -24,4 +24,6 @@ private:
 int TotalNumAircraft;
 //look ahead parameter;must be set by operator.
 int n;
+//
+vector<Aircraft> aircraft;
 };
