@@ -1,46 +1,28 @@
-#include <iostream>
+
+
+#ifndef AIRCRAFT_H
+#define AIRCRAFT_H
+
 #include <vector>
 
-class Aircraft
-{
-public:
-	Aircraft(); // default constructor
-	Aircraft(float, int, double, double, double); //Constructor
-	Aircraft(const Aircraft& copy); // Copy constructor
+struct Aircraft {
+    float time;
+    int id;
+    double flevel;
+    double xspeed;
+    double yspeed;
+    double zspeed;
+    double xpost;
+    double ypost;
+    double zpost;
 
 
-	//Setters & Getters
-	void setTime(float time);
-	float getTime();
-	void setID(int id);
-	int getID();
-	void setFL(double flevel);
-	double getFL();
-	void setXSpeed(double xspeed);
-	double getXSpeed();
-	void setYSpeed(double yspeed);
-	double getYSpeed();
-	void setZSpeed(double zspeed);
-	double getZSpeed();
-	void setXPosition(double xpost);
-	double getXPosition();
-	void setYPosition(double ypost);
-	double getYPosition();
-	void setZPosition(double zpost);
-	double getZPosition();
-	void display(); // will send data when signal is detected\
+    Aircraft() = default;
 
-private:
-	float time;
-	int id;
-	double flevel;
-	double xspeed;
-	double yspeed;
-	double zspeed;
-	double xpost;
-	double ypost;
-	double zpost;
-
-
-
+    Aircraft(float t, int i, double fl, double xs, double ys, double zs, double xp, double yp, double zp);
 };
+
+void display(const Aircraft& aircraft);
+
+
+#endif // AIRCRAFT_LIST_H
