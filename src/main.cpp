@@ -12,19 +12,19 @@
 
 //Thread functions
 void* airplane_thread_func(void* arg){
-	Aircaft();
+	//Aircaft();
 }
 void* comsys_thread_func(void* arg){
 	ComSys();
 }
 void* operator_thread_func(void* arg){
-	Operator();
+	//Operator();
 }
 void* display_thread_func(void* arg){
-	Display();
+	//Display();
 }
 void* comms_thread_func(void* arg){
-	Comms();
+	//Comms();
 }
 void* radar_thread_func(void* arg){
 	Radar();
@@ -76,17 +76,18 @@ int main(){
 	         return 1;
 	     }
 
-	// Creating Operator thread
+		// Creating Radar thread
+		  if (pthread_create(&Radar_tid, NULL, radar_thread_func, (void*)&mutexAirplane) != 0) {
+		 	         perror("Failed to create Radar thread");
+		 	         return 1;
+		 	     }
+
+	/*// Creating Operator thread
 	  if (pthread_create(&Operator_tid, NULL, operator_thread_func, (void*)&mutexAirplane) != 0) {
 	 	         perror("Failed to create Operator thread");
 	 	         return 1;
 	 	     }
 
-	// Creating Radar thread
-	  if (pthread_create(&Radar_tid, NULL, radar_thread_func, (void*)&mutexAirplane) != 0) {
-	 	         perror("Failed to create Radar thread");
-	 	         return 1;
-	 	     }
 	// Creating Display thread
 	  if (pthread_create(&Display_tid, NULL, display_thread_func, (void*)&mutexAirplane) != 0) {
 	 	         perror("Failed to create Display thread");
@@ -96,7 +97,7 @@ int main(){
 	  if (pthread_create(&Comms_tid, NULL, comms_thread_func, (void*)&mutexAirplane) != 0) {
 	 	         perror("Failed to create Comms thread");
 	 	         return 1;
-	 	     }
+	 	     }*/
 
 	//joining threads
 	  if (pthread_join(ComSys_tid, NULL) != 0) {
@@ -104,17 +105,17 @@ int main(){
 	          return 1;
 	      }
 
-	  if (pthread_join(Operator_tid, NULL) != 0) {
+	/*  if (pthread_join(Operator_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
-	      }
+	      }*/
 
 	  if (pthread_join(Radar_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
 
-	  if (pthread_join(Display_tid, NULL) != 0) {
+/*	  if (pthread_join(Display_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
@@ -122,7 +123,7 @@ int main(){
 	  if (pthread_join(Comms_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
-	      }
+	      }*/
 
 
 	return 0;
