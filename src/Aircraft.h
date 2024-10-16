@@ -8,7 +8,6 @@ using namespace std;
 struct Aircraft {
     float time;
     int id;
-    double flevel;
     double xspeed;
     double yspeed;
     double zspeed;
@@ -19,7 +18,7 @@ struct Aircraft {
 
     Aircraft() = default;
 
-    Aircraft(float t, int i, double fl, double xs, double ys, double zs, double xp, double yp, double zp);
+    Aircraft(float t, int i, double xs, double ys, double zs, double xp, double yp, double zp);
 };
 
 void display(const Aircraft& aircraft);
