@@ -1,23 +1,28 @@
+#ifndef Radar_H
+#define Radar_H
+
 #include <vector>
+#include <string>
 #include "Aircraft.h"
 #include "Operator.h"
 #include "ComSys.h"
 
-using namespace std;
+#define MAX_AIRCRAFT 120;
 
+using namespace std;
 
 class Radar{
 public:
 	Radar();
 
-	void addAircraft(Aircraft*);
-	void scanForAircrafts();
-	Aircraft** getAircrafts();
-	int getTotalAircrafts();
-
+	void addAircraft();
+	void scanForAircraft();
+	void storeAirSpaceHistory();
 
 private:
-
+	std::string History = "History.txt";
+	std::vector<Aircraft> Aircrafts;
 
 };
 
+#endif

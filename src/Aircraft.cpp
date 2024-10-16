@@ -1,4 +1,5 @@
 #include "Aircraft.h"
+<<<<<<< HEAD
 #include <vector>
 
 
@@ -20,3 +21,8 @@ void display(const Aircraft& aircraft) {
               << "Y Position: " << aircraft.ypost << "\n"
               << "Z Position: " << aircraft.zpost << "\n";
 }
+=======
+
+Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp, double yp, double zp)
+    : time(t), id(i), xspeed(xs), yspeed(ys), zspeed(zs), xpost(xp), ypost(yp), zpost(zp) {}
+>>>>>>> origin/Thomas
