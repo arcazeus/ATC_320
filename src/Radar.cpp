@@ -2,24 +2,32 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <string>
 #include "Radar.h"
 #include "ComSys.h"
 #include "Aircraft.h"
 
+Radar::Radar(){
+
+
+
+}
+
 void Radar::addAircraft(){
 
 }
 
-void Radar::scanForaAircraft(){
-	std:cout<<"Scanning...\n";
-	for(int i =0; i<MAX_AIRCRAFTS;i++){
+void Radar::scanForAircraft(){
+	std::cout<<"Scanning...\n";
+
+	for(int i =0 ; i<120; i++){
 
 	}
 
 }
 
-void Radar::storeAirSpaceHistory(History){
+void Radar::storeAirSpaceHistory(){
 	 std::ofstream outfile;
 
 	    // Open the file in append mode (optional), or trunc mode (default)
@@ -28,13 +36,13 @@ void Radar::storeAirSpaceHistory(History){
 	    // Check if the file is open
 	    if (outfile.is_open()) {
 	        // Write content to the file
-	        outfile << Aircrafts << std::endl;
+	      //  outfile << Aircrafts << std::endl;
 
 	        // Close the file after writing
 	        outfile.close();
 	        std::cout << "Data written to file successfully!" << std::endl;
 	    } else {
-	        std::cerr << "Error: Could not open file " << filename << std::endl;
+	        std::cerr << "Error: Could not open file " << History << std::endl;
 	    }
 
 }

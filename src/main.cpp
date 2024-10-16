@@ -1,5 +1,7 @@
 #include <thread>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "ComSys.h"
 #include "Radar.h"
 #include "Aircraft.h"
@@ -7,12 +9,6 @@
 #include "Operator.h"
 #include "Display.h"
 #include "SharedMem.h"
-
-
-pthread_mutex_t mutexAirplane = PTHREAD_MUTEX_INITIALIZER;
-
-// thread IDs
-pthread_t ComputerSystem_tid, Operator_tid, Radar_tid, Display_tid,Comms_tid,Aircrafth_tid;
 
 //Thread functions
 void* airplane_thread_func(void* arg);
@@ -24,19 +20,24 @@ void* radar_thread_func(void* arg);
 
 
 int main(){
+	pthread_mutex_t mutexAirplane = PTHREAD_MUTEX_INITIALIZER;
+
+	// thread IDs
+	pthread_t ComSys_tid, Operator_tid, Radar_tid, Display_tid,Comms_tid,Aircraft_tid[120];
 
 	std::vector<Aircraft> aircrafts;
-		std::ifstream file(filePath);
+		std::ifstream file("ENROUTE");
 
 		if (!file.is_open()) {
-			std::cerr << "Error opening file: " << filePath << std::endl;
-			return aircrafts;
+			std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
 		}
 
 		std::string line;
 		while (std::getline(file, line)) {
 			std::istringstream iss(line);
-			int time, ID, x, y, z, xSpeed, ySpeed, zSpeed;
+			float time;
+			int ID;
+			double x, y, z, xSpeed, ySpeed, zSpeed;
 
 			if (!(iss >> time >> ID >> x >> y >> z >> xSpeed >> ySpeed >> zSpeed)) {
 				std::cerr << "Error reading line: " << line << std::endl;
@@ -49,15 +50,16 @@ int main(){
 			aircrafts.push_back(aircraft);
 		}
 
+		int size = aircrafts.size();
 	// Creating Airplane threads
-	  for (int i = 0; i < aircrafts.size(); i++) {
-	        if (pthread_create(&airplane_threads[i], NULL, airplane_thread_func, (void*)&mutexAirplane) != 0) {
+	  for (int i = 0; i < size; i++) {
+	        if (pthread_create(&Aircraft_tid[i], NULL, airplane_thread_func, (void*)&mutexAirplane) != 0) {
 	            perror("Failed to create airplane thread");
 	            return 1;
 	        }
 	    }
 	// Creating Comsys thread
-	  if (pthread_create(&computerSystem_tid, NULL, comsys_thread_func, (void*)&mutexAirplane) != 0) {
+	  if (pthread_create(&ComSys_tid, NULL, comsys_thread_func, (void*)&mutexAirplane) != 0) {
 	         perror("Failed to create ComSys thread");
 	         return 1;
 	     }
@@ -85,27 +87,27 @@ int main(){
 	 	     }
 
 	//joining threads
-	  if (pthread_join(&ComSys_tid, NULL) != 0) {
+	  if (pthread_join(ComSys_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
 
-	  if (pthread_join(&Operator_tid, NULL) != 0) {
+	  if (pthread_join(Operator_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
 
-	  if (pthread_join(&Radar_tid, NULL) != 0) {
+	  if (pthread_join(Radar_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
 
-	  if (pthread_join(&Display_tid, NULL) != 0) {
+	  if (pthread_join(Display_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }
 
-	  if (pthread_join(&Comms_tid, NULL) != 0) {
+	  if (pthread_join(Comms_tid, NULL) != 0) {
 	          perror("Failed to join ComSys thread");
 	          return 1;
 	      }

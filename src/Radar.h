@@ -1,9 +1,13 @@
+#ifndef Radar_H
+#define Radar_H
+
 #include <vector>
+#include <string>
 #include "Aircraft.h"
 #include "Operator.h"
 #include "ComSys.h"
 
-#define MAX_AIRCRAFTS 120
+#define MAX_AIRCRAFT 120;
 
 using namespace std;
 
@@ -11,13 +15,14 @@ class Radar{
 public:
 	Radar();
 
-	void addAircraft(Aircraft*);
-	void scanForAircrafts();
-	void storeAirSpaceHistory(std::string s);
+	void addAircraft();
+	void scanForAircraft();
+	void storeAirSpaceHistory();
 
 private:
 	std::string History = "History.txt";
-	vector<Aircraft> Aircrafts;
+	std::vector<Aircraft> Aircrafts;
 
 };
 
+#endif
