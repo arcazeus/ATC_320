@@ -33,7 +33,6 @@ void receiveResponse(const string& aircraftID);
 
 private:
 
-mutex mtx;
 
 void logCommand(const Command& command); // just logging details of command
 void logResponse(const string& aircraftID, const string& response);
