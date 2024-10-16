@@ -2,6 +2,7 @@
 #include "Aircraft.h"
 #include "Operator.h"
 #include "Radar.h"
+#include "SharedMem.h"
 
 using namespace std;
 
@@ -9,7 +10,7 @@ using namespace std;
 class ComSys{
 public:
 
-	ComSys();
+	 ComSys(SharedMem& shared) : shared(shared) {}
 	//checks to see if any collisions happened or will happen
 	void checkViolations();
 	//sends an alert to operator about current and future safety violation
