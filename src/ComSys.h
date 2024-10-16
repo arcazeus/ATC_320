@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifndef ComSys
 #define Comsys
 =======
+=======
+
+>>>>>>> origin/Thomas
 #ifndef ComSys_H
 #define ComSys_H
 >>>>>>> origin/Thomas

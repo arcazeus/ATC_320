@@ -61,7 +61,7 @@ void ComSys::operatorAlert(int id_1, int id_2){
 
 void ComSys::sendDataDisplay(int id){
 
-std::cout<<aircraft[id].getID()<<""<<aircraft[id].getX()<<""<<aircraft[id].getY()<<""<<aircraft[id].getZ()<<std::endl;
+std::cout<<aircraft[id].getId()<<""<<aircraft[id].getPositionX()<<""<<aircraft[id].getPositionY()<<""<<aircraft[id].getPositionZ()<<std::endl;
 }
 
 
