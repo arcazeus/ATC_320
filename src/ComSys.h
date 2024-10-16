@@ -1,3 +1,6 @@
+#ifndef ComSys
+#define Comsys
+
 #include <vector>
 #include "Aircraft.h"
 #include "Operator.h"
@@ -27,3 +30,5 @@ int n;
 //
 vector<Aircraft> aircraft;
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef Radar
+#define Radar
+
 #include <vector>
 #include "Aircraft.h"
 #include "Operator.h"
@@ -21,3 +24,4 @@ private:
 
 };
 
+#endif

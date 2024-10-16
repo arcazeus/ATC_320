@@ -1,4 +1,6 @@
+#include <iostream>
 #include "ComSys.h"
+#include "Aircraft.h"
 #include "Operator.h"
 #include <vector>
 
