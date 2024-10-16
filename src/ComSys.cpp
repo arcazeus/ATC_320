@@ -3,6 +3,7 @@
 #include "Aircraft.h"
 #include "Operator.h"
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ void ComSys::operatorAlert(int id_1, int id_2){
 
 }
 
-voidComSys::sendDataDisplay(int id){
+void ComSys::sendDataDisplay(int id){
 
 std::cout<<aircraft[id].getID()<<""<<aircraft[id].getX()<<""<<aircraft[id].getY()<<""<<aircraft[id].getZ()<<std::endl;
 }
