@@ -1,9 +1,9 @@
 
 
-#ifndef AIRCRAFT_H
-#define AIRCRAFT_H
-
+#include <iostream>
 #include <vector>
+
+using namespace std;
 
 struct Aircraft {
     float time;
@@ -25,4 +25,4 @@ struct Aircraft {
 void display(const Aircraft& aircraft);
 
 
-#endif // AIRCRAFT_LIST_H
+
