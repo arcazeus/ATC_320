@@ -25,12 +25,12 @@ struct Aircraft {
     // Getters
        float getTime() const;
        int getId() const;
-       double getXspeed() const;
-       double getYspeed() const;
-       double getZspeed() const;
-       double getXpost() const;
-       double getYpost() const;
-       double getZpost() const;
+       double getSpeedX() const;
+       double getSpeedY() const;
+       double getSpeedZ() const;
+       double getPositionX() const;
+       double getPositionY() const;
+       double getPositionZ() const;
 
        // Setters
        void setTime(float t);
@@ -44,6 +44,7 @@ struct Aircraft {
 
 };
 
+#endif
 void display(const Aircraft& aircraft);
 
 

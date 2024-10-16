@@ -12,12 +12,12 @@ Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp, d
 // Getters
 float Aircraft::getTime() const { return time; }
 int Aircraft::getId() const { return id; }
-double Aircraft::getXspeed() const { return xspeed; }
-double Aircraft::getYspeed() const { return yspeed; }
-double Aircraft::getZspeed() const { return zspeed; }
-double Aircraft::getXpost() const { return xpost; }
-double Aircraft::getYpost() const { return ypost; }
-double Aircraft::getZpost() const { return zpost; }
+double Aircraft::getSpeedX() const { return xspeed; }
+double Aircraft::getSpeedY() const { return yspeed; }
+double Aircraft::getSpeedZ() const { return zspeed; }
+double Aircraft::getPositionX() const { return xpost; }
+double Aircraft::getPositionY() const { return ypost; }
+double Aircraft::getPositionZ() const { return zpost; }
 
 // Setters
 void Aircraft::setTime(float t) { time = t; }

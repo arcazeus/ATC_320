@@ -1,4 +1,5 @@
 
+/*
 #include "Comms.h"
 
 CommunicationSys::Communicationsys(){}
@@ -14,5 +15,6 @@ void Communication::sendCommand(const string& aicraftID, const Command& command)
 
 
 }
+*/
 
 

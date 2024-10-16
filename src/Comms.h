@@ -12,19 +12,19 @@
 // Memory Sharing
 #include <iostream>
 #include <mutex>
-#include "Command.h"
+#include "ComSys.h"
 #include <string>
 
 
-class CommunicationSys
+class Comms{
 
 public:
 //Constructor
 
-CommunicationSys();
+Comms();
 
 //send command to an aircraft
-void sendCommand(const string& aircraftID, const Command& command);
+void sendCommand(const string& aircraftID, const Comms& command);
 
 
 //receive response from an aircraft
@@ -34,9 +34,12 @@ void receiveResponse(const string& aircraftID);
 private:
 
 
-void logCommand(const Command& command); // just logging details of command
+void logCommand(const Comms& command); // just logging details of command
 void logResponse(const string& aircraftID, const string& response);
 
 bool isAricraftAvailable(const string& aircraftID);
+
+};
+
 
 

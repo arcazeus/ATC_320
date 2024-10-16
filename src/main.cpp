@@ -11,12 +11,24 @@
 #include "SharedMem.h"
 
 //Thread functions
-void* airplane_thread_func(void* arg);
-void* comsys_thread_func(void* arg);
-void* operator_thread_func(void* arg);
-void* display_thread_func(void* arg);
-void* comms_thread_func(void* arg);
-void* radar_thread_func(void* arg);
+void* airplane_thread_func(void* arg){
+	Aircaft();
+}
+void* comsys_thread_func(void* arg){
+	ComSys();
+}
+void* operator_thread_func(void* arg){
+	Operator();
+}
+void* display_thread_func(void* arg){
+	Display();
+}
+void* comms_thread_func(void* arg){
+	Comms();
+}
+void* radar_thread_func(void* arg){
+	Radar();
+}
 
 
 int main(){
