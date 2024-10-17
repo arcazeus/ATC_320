@@ -22,6 +22,11 @@ public:
     void sendCommandToAircraft(int aircraftID, const std::string& command);
     void requestAircraftInfo(int aircraftID);
     void displayInfo(const std::string& info);
+    void checkViolationFromCS();
+    void operatorStart();
+
+    void setConnectionId(int connectionId);
+	int getConnectionId() const;
 };
 
 #endif

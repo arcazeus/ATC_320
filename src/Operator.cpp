@@ -51,6 +51,17 @@ Operator::~Operator() {
 	}
 }
 
+/////Setters & Getters////
+// Setter for connectionId
+void Operator::setConnectionId(int connId) {
+    this->connectionId = connId;
+}
+
+// Getter for connectionId
+int Operator::getConnectionId() const {
+    return connectionId;
+}
+
 /////Aircraft related commands/////
 // Method to send command to aircraft
 void Operator::sendCommandToAircraft(int aircraftID, const std::string& command) {
@@ -114,8 +125,66 @@ void Operator::displayInfo(const std::string& info) {
 
 // Private method to log the commands sent
 void Operator::logCommand(const std::string& command) {
-    std::cout << "Logging command: " << command << std::endl;
-    // Add logic to store the command in a log file
+	std::ofstream logFile("logFile");
+	if (logFile.is_open()) {
+		logFile << "Command: " << command << std::endl;
+		std::cout << "Logging command: " << command << std::endl;
+	} else {
+		std::cerr << "Error: Log file is not open!" << std::endl;
+	}
+}
+
+void Operator::checkViolationFromCS(){
+	// Buffer to store the message received from the Computer System
+	char message[256];
+	int csId = getConnectionId();  // Get the connection ID for the Computer System
+
+	// Receive the message from the Computer System
+	int status = MsgReceive(csId, message, sizeof(message), NULL);
+
+	if (status == -1) {
+		std::cerr << "Error: Failed to receive message from the Computer System!" << std::endl;
+		return;
+	}
+
+	// Process the received message
+	std::string receivedMessage(message);
+	if (receivedMessage.find("Violation") != std::string::npos) {
+		std::cout << "Violation detected: " << receivedMessage << std::endl;
+		// Trigger alarm or handle the violation appropriately
+		// For example, display an alert to the operator:
+		displayInfo("ALARM: Aircraft Separation Violation!");
+	} else {
+		// No violation found, display regular info (optional)
+		std::cout << "Received from CS: " << receivedMessage << std::endl;
+	}
+}
+
+void Operator::operatorStart(){
+
+	std::cout << "Operator Console starting..." << std::endl;
+
+	// Ensure the connection to the Computer System is established
+	if (connectionId == -1) {
+		std::cerr << "Error: Unable to start Operator Console, no connection to Computer System!" << std::endl;
+		return;
+	} else {
+		std::cout << "Computer System Connected." << std::endl;
+	}
+
+	std::cout << "Operator Console started" << std::endl;
+
+	// Main operator loop: check for aircraft violations and handle other tasks
+	while (true) {
+		// Check for violations from the Computer System
+		checkViolationFromCS();
+
+		// Add more functionality here if needed (e.g., process incoming commands)
+
+		// Sleep for a short time before the next loop iteration (optional)
+		usleep(1000000);  // 1 second
+	}
+
 }
 
 
