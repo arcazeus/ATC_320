@@ -4,7 +4,7 @@
 #include <cstring>
 #include <unistd.h>
 
-class Clock{
+class Clock {
 
 	Clock();
 
@@ -14,13 +14,9 @@ class Clock{
 	double Tik();
 	double Tok();
 
-
-
 private:
 	timer_t timer_id;
 	struct sigevent sev;
 	struct itimerspec its;
-
-
 
 };

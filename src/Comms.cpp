@@ -1,23 +1,16 @@
 
-
-
 #include "Comms.h"
 
-Comms::Comms(){
+Comms::Comms() {
 
 }
 
-void Comms::runComms(){
-
+void Comms::runComms() {
+	std::cout << "Communication System started...";
 }
-void Comms::sendCommand(const string& aircraftID, const Comms& command)
+void Comms::sendCommand(const string &aircraftID, const Comms &command)
 
 {
 
-
-
 }
-
-
-
 

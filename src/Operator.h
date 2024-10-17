@@ -23,7 +23,7 @@ public:
     void requestAircraftInfo(int aircraftID);
     void displayInfo(const std::string& info);
     void checkViolationFromCS();
-    void operatorStart();
+    void runOperator();
 
     void setConnectionId(int connectionId);
 	int getConnectionId() const;

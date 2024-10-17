@@ -160,7 +160,7 @@ void Operator::checkViolationFromCS(){
 	}
 }
 
-void Operator::operatorStart(){
+void Operator::runOperator(){
 
 	std::cout << "Operator Console starting..." << std::endl;
 

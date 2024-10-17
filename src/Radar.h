@@ -11,7 +11,7 @@
 
 using namespace std;
 
-class Radar{
+class Radar {
 public:
 	Radar();
 

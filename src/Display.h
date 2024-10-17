@@ -7,21 +7,21 @@
 
 class Display {
 public:
-    // Constructor and Destructor
-    Display();
-    ~Display();
+	// Constructor and Destructor
+	Display();
+	~Display();
 
-    // Public methods
-    void updateScreen();  // Updates the display with current aircraft information
-    void showAircraftInfo(int aircraftID, const std::string& info);  // Show specific info about an aircraft
-    void showAlarm(const std::string& alarmMessage);  // Show an alarm on the display
+	// Public methods
+	void updateScreen(); // Updates the display with current aircraft information
+	void showAircraftInfo(int aircraftID, const std::string &info); // Show specific info about an aircraft
+	void showAlarm(const std::string &alarmMessage); // Show an alarm on the display
 
-    // Method to update the aircraft data
-    void updateAircraftData(int aircraftID, const std::string& data);
+	// Method to update the aircraft data
+	void updateAircraftData(int aircraftID, const std::string &data);
 
 private:
-    std::unordered_map<int, std::string> aircraftData;  // Stores aircraft info for display
-    void render();  // Internal method to render the display
+	std::unordered_map<int, std::string> aircraftData; // Stores aircraft info for display
+	void render();  // Internal method to render the display
 };
 
 #endif // DISPLAY_H

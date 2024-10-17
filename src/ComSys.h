@@ -1,5 +1,4 @@
 
-
 #ifndef ComSys_H
 #define ComSys_H
 
@@ -16,11 +15,11 @@
 
 using namespace std;
 
-struct SharedMemory{
+struct SharedMemory {
 	Aircraft aircrafts[MAX_AIRCRAFTS];
 	pthread_mutex_t MasterLock = PTHREAD_MUTEX_INITIALIZER;
 };
-class ComSys{
+class ComSys {
 public:
 
 	void runComSys();
@@ -37,11 +36,11 @@ public:
 	int getNumAircraft();
 
 private:
-int TotalNumAircraft;
+	int TotalNumAircraft;
 //look ahead parameter;must be set by operator.
-int n;
+	int n;
 //
-vector<Aircraft> aircraft;
+	vector<Aircraft> aircraft;
 };
 
 #endif

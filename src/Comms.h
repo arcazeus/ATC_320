@@ -15,31 +15,25 @@
 #include "ComSys.h"
 #include <string>
 
-
-class Comms{
+class Comms {
 
 public:
 //Constructor
 
-Comms();
-void runComms();
+	Comms();
+	void runComms();
 //send command to an aircraft
-void sendCommand(const string& aircraftID, const Comms& command);
-
+	void sendCommand(const string &aircraftID, const Comms &command);
 
 //receive response from an aircraft
-void receiveResponse(const string& aircraftID);
-
+	void receiveResponse(const string &aircraftID);
 
 private:
 
+	void logCommand(const Comms &command); // just logging details of command
+	void logResponse(const string &aircraftID, const string &response);
 
-void logCommand(const Comms& command); // just logging details of command
-void logResponse(const string& aircraftID, const string& response);
-
-bool isAricraftAvailable(const string& aircraftID);
+	bool isAricraftAvailable(const string &aircraftID);
 
 };
-
-
 
