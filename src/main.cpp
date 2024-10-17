@@ -21,12 +21,24 @@
 #include "Display.h"
 
 #define MAX_AIRCRAFTS 120
-void* airplane_thread_func(void* arg);
-void* comsys_thread_func(void* arg);
-void* radar_thread_func(void* arg);
-void* operator_thread_func(void* arg);
-void* display_thread_func(void* arg);
-void* comms_thread_func(void* arg);
+void* airplane_thread_func(void* arg){
+	Aircraft();
+}
+void* comsys_thread_func(void* arg){
+	ComSys();
+}
+void* radar_thread_func(void* arg){
+	Radar();
+}
+void* operator_thread_func(void* arg){
+	Operator();
+}
+void* display_thread_func(void* arg){
+	Display();
+}
+void* comms_thread_func(void* arg){
+	Comms();
+}
 
 
 int main() {
@@ -76,8 +88,7 @@ int main() {
 
 	// Creating Airplane threads
 	for (int i = 0; i < size; i++) {
-		if (pthread_create(&Aircraft_tid[i], NULL, airplane_thread_func,
-				(void*) &mutexAirplane) != 0) {
+		if (pthread_create(&Aircraft_tid[i], NULL, airplane_thread_func,(void*) &mutexAirplane) != 0) {
 			perror("Failed to create airplane thread");
 			return 1;
 		}

@@ -19,6 +19,7 @@ struct Aircraft {
     double zpost;
 
 
+ Aircraft();
     //Aircraft() = default;
     Aircraft(float t, int i, double xs, double ys, double zs, double xp, double yp, double zp);
     void display(const Aircraft& aircraft);

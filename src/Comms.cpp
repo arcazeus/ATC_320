@@ -1,20 +1,20 @@
 
-/*
+
+
 #include "Comms.h"
 
-CommunicationSys::Communicationsys(){}
+Comms::Comms(){
 
+}
 
-void Communication::sendCommand(const string& aicraftID, const Command& command)
+void Comms::sendCommand(const string& aircraftID, const Comms& command)
+
 {
-	lock_guard<mutex> lock (mtx);
-
-
-
 
 
 
 }
-*/
+
+
 
 

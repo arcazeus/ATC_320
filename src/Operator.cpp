@@ -1,25 +1,23 @@
 #include "Operator.h"
-<<<<<<< HEAD
+#include "Aircraft.h"
+#include "ComSys.h"
+#include "Display.h"
 #include <string>
 #include <vector>
 #include <fstream>
 #include <sstream>
 #include <ostream>
-=======
->>>>>>> origin/peter
 #include <iostream>
 #include <sys/neutrino.h>
-#include <string.h>
+#include <sys/dispatch.h>
 #include <unistd.h>
 
 /////Constructors/////
 
 // OperatorConsole constructor
 Operator::Operator() {
-<<<<<<< HEAD
 
 	std::ofstream logFile("logFile");
-=======
 	 // Establish a connection to the Computer System's communication channel
 	connectionId = name_open("computerSystemServer", 0);
 	if (connectionId == -1) {
@@ -28,7 +26,6 @@ Operator::Operator() {
         std::cout << "Successfully connected to Computer System via name lookup." << std::endl;
     }
 
->>>>>>> origin/peter
 	// Open a log file to store commands (append mode)
 
 	if (logFile.is_open()) {
@@ -43,14 +40,11 @@ Operator::Operator() {
 
 // Destructor
 Operator::~Operator() {
-<<<<<<< HEAD
-	std::ofstream logFile("logFile");
 
-=======
+	std::ofstream logFile("logFile");
 	if (connectionId != -1) {
 	        name_close(connectionId);
 	    }
->>>>>>> origin/peter
 	if (logFile.is_open()) {
 		logFile << "Operator Console shutting down.\n";  // Log shutdown event
 		logFile.close();  // Close the log file
