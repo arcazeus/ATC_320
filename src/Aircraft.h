@@ -19,9 +19,9 @@ struct Aircraft {
     double zpost;
 
 
-    Aircraft() = default;
+    //Aircraft() = default;
     Aircraft(float t, int i, double xs, double ys, double zs, double xp, double yp, double zp);
-
+    void display(const Aircraft& aircraft);
     // Getters
        float getTime() const;
        int getId() const;
@@ -45,7 +45,7 @@ struct Aircraft {
 };
 
 #endif
-void display(const Aircraft& aircraft);
+
 
 
 

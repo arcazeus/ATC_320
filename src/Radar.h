@@ -1,14 +1,5 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-#ifndef Radar
-#define Radar
-=======
-=======
-
->>>>>>> origin/Thomas
 #ifndef Radar_H
 #define Radar_H
->>>>>>> origin/Thomas
 
 #include <vector>
 #include <string>

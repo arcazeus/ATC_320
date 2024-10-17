@@ -8,9 +8,9 @@
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
-#include "SharedMem.h"
 
-//Thread functions
+
+/*//Thread functions
 void* airplane_thread_func(void* arg){
 	//Aircaft();
 }
@@ -28,7 +28,7 @@ void* comms_thread_func(void* arg){
 }
 void* radar_thread_func(void* arg){
 	Radar();
-}
+}*/
 
 
 int main(){
