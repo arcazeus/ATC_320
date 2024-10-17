@@ -1,4 +1,9 @@
-#include <Operator.h>
+#include "Operator.h"
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <ostream>
 #include <iostream>
 
 /////Constructors/////
@@ -6,9 +11,8 @@
 // OperatorConsole constructor
 Operator::Operator() {
 
-
+	std::ofstream logFile("logFile");
 	// Open a log file to store commands (append mode)
-	logFile.open("operator_console_log.txt", std::ios::app);
 
 	if (logFile.is_open()) {
 		std::cout << "Operator Console initialized. Log file created." << std::endl;
@@ -22,6 +26,8 @@ Operator::Operator() {
 
 // Destructor
 Operator::~Operator() {
+	std::ofstream logFile("logFile");
+
 	if (logFile.is_open()) {
 		logFile << "Operator Console shutting down.\n";  // Log shutdown event
 		logFile.close();  // Close the log file

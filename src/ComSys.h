@@ -3,16 +3,23 @@
 #ifndef ComSys_H
 #define ComSys_H
 
-
+#include <iostream>
+#include <cstring>
 #include <vector>
+#include <mutex>
+#include <thread>
 #include "Aircraft.h"
 #include "Operator.h"
 #include "Radar.h"
 
+#define MAX_AIRCRAFTS 120
 
 using namespace std;
 
-
+struct SharedMemory{
+	Aircraft aircrafts[MAX_AIRCRAFTS];
+	pthread_mutex_t MasterLock = PTHREAD_MUTEX_INITIALIZER;
+};
 class ComSys{
 public:
 
