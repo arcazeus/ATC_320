@@ -21,24 +21,6 @@
 #include "Display.h"
 
 #define MAX_AIRCRAFTS 120
-void* airplane_thread_func(void* arg){
-	Aircraft();
-}
-void* comsys_thread_func(void* arg){
-	ComSys();
-}
-void* radar_thread_func(void* arg){
-	Radar();
-}
-void* operator_thread_func(void* arg){
-	Operator();
-}
-void* display_thread_func(void* arg){
-	Display();
-}
-void* comms_thread_func(void* arg){
-	Comms();
-}
 
 
 int main() {
@@ -88,41 +70,41 @@ int main() {
 
 	// Creating Airplane threads
 	for (int i = 0; i < size; i++) {
-		if (pthread_create(&Aircraft_tid[i], NULL, airplane_thread_func,(void*) &mutexAirplane) != 0) {
+		if (pthread_create(&Aircraft_tid[i], NULL, &Aircraft::runAircraft,(void*) &mutexAirplane) != 0) {
 			perror("Failed to create airplane thread");
 			return 1;
 		}
 		++count;
 	}
 	// Creating Comsys thread
-	if (pthread_create(&ComSys_tid, NULL, comsys_thread_func,
+	if (pthread_create(&ComSys_tid, NULL, &ComSys::runComSys,
 			(void*) &mutexAirplane) != 0) {
 		perror("Failed to create ComSys thread");
 		return 1;
 	}
 
 	// Creating Radar thread
-	if (pthread_create(&Radar_tid, NULL, radar_thread_func,
+	if (pthread_create(&Radar_tid, NULL, &Radar::runRadar,
 			(void*) &mutexAirplane) != 0) {
 		perror("Failed to create Radar thread");
 		return 1;
 	}
 
 	// Creating Operator thread
-	if (pthread_create(&Operator_tid, NULL, operator_thread_func,
+	if (pthread_create(&Operator_tid, NULL, &Operator::runOperator,
 			(void*) &mutexAirplane) != 0) {
 		perror("Failed to create Operator thread");
 		return 1;
 	}
 
 	// Creating Display thread
-	if (pthread_create(&Display_tid, NULL, display_thread_func,
+	if (pthread_create(&Display_tid, NULL, &Display::runDisplay,
 			(void*) &mutexAirplane) != 0) {
 		perror("Failed to create Display thread");
 		return 1;
 	}
 	// Creating Comms thread
-	if (pthread_create(&Comms_tid, NULL, comms_thread_func,
+	if (pthread_create(&Comms_tid, NULL, &Comms::runComms,
 			(void*) &mutexAirplane) != 0) {
 		perror("Failed to create Comms thread");
 		return 1;

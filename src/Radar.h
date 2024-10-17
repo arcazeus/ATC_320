@@ -15,6 +15,7 @@ class Radar{
 public:
 	Radar();
 
+	void runRadar();
 	void addAircraft();
 	void scanForAircraft();
 	void storeAirSpaceHistory();

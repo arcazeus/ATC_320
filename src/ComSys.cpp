@@ -7,61 +7,72 @@
 
 using namespace std;
 
-//ComSys::ComSys::(){
-//
-//}
+void ComSys::runComSys() {
+	std::cout << "Computer System Booting up..." << std::endl;
+	while (1) {
+		checkOperatorAlert();
+		checkViolations();
+	}
+}
+void ComSys::checkOperatorAlert() {
 
+}
 //minimum Z=1000, X=3000, Y=3000
-void ComSys::checkViolations(){
+void ComSys::checkViolations() {
 	int temp_X;
 	int temp_Y;
 	int temp_Z;
 
 	//checks for any current violations
-	for(int i=0;i<TotalNumAircraft;i++){
-		for(int j =1;j<TotalNumAircraft;j++){
-			temp_X=aircraft[i].getPositionX() - aircraft[j].getPositionX();
-			temp_Y=aircraft[i].getPositionY() - aircraft[j].getPositionY();
-			temp_Z=aircraft[i].getPositionZ() - aircraft[j].getPositionZ();
+	for (int i = 0; i < TotalNumAircraft; i++) {
+		for (int j = 1; j < TotalNumAircraft; j++) {
+			temp_X = aircraft[i].getPositionX() - aircraft[j].getPositionX();
+			temp_Y = aircraft[i].getPositionY() - aircraft[j].getPositionY();
+			temp_Z = aircraft[i].getPositionZ() - aircraft[j].getPositionZ();
 
-			if(temp_X<=3000 || temp_Y<=3000 || temp_Z<=1000){
-				operatorAlert(i,j);
+			if (temp_X <= 3000 || temp_Y <= 3000 || temp_Z <= 1000) {
+				operatorAlert(i, j);
 			}
 
-			else{
+			else {
 				break;
 			}
 		}
 	}
 
 	// checks for future violations
-	for(int i=0;i<TotalNumAircraft;i++){
-			for(int j =1;j<TotalNumAircraft;j++){
-				temp_X=aircraft[i].getPositionX()+n*aircraft[i].getSpeedX() - aircraft[j].getPositionX()+n*aircraft[j].getSpeedX();
-				temp_Y=aircraft[i].getPositionY()+n*aircraft[i].getSpeedY() - aircraft[j].getPositionY()+n*aircraft[j].getSpeedY();
-				temp_Z=aircraft[i].getPositionY()+n*aircraft[i].getSpeedY() - aircraft[j].getPositionY()+n*aircraft[j].getSpeedY();
+	for (int i = 0; i < TotalNumAircraft; i++) {
+		for (int j = 1; j < TotalNumAircraft; j++) {
+			temp_X = aircraft[i].getPositionX() + n * aircraft[i].getSpeedX()
+					- aircraft[j].getPositionX() + n * aircraft[j].getSpeedX();
+			temp_Y = aircraft[i].getPositionY() + n * aircraft[i].getSpeedY()
+					- aircraft[j].getPositionY() + n * aircraft[j].getSpeedY();
+			temp_Z = aircraft[i].getPositionY() + n * aircraft[i].getSpeedY()
+					- aircraft[j].getPositionY() + n * aircraft[j].getSpeedY();
 
-				if(temp_X<=3000 || temp_Y<=3000 || temp_Z<=1000){
-					operatorAlert(i,j);
-				}
+			if (temp_X <= 3000 || temp_Y <= 3000 || temp_Z <= 1000) {
+				operatorAlert(i, j);
+			}
 
-				else{
-					break;
-				}
+			else {
+				break;
 			}
 		}
+	}
 
 }
 
-void ComSys::operatorAlert(int id_1, int id_2){
+void ComSys::operatorAlert(int id_1, int id_2) {
 
-	std::cout<<"There is a current\future violation with plane"<<id_1<<"and plane"<<id_2<<std::endl;
+	std::cout << "There is a current\future violation with plane" << id_1
+			<< "and plane" << id_2 << std::endl;
 
 }
 
-void ComSys::sendDataDisplay(int id){
+void ComSys::sendDataDisplay(int id) {
 
-std::cout<<aircraft[id].getId()<<""<<aircraft[id].getPositionX()<<""<<aircraft[id].getPositionY()<<""<<aircraft[id].getPositionZ()<<std::endl;
+	std::cout << aircraft[id].getId() << "" << aircraft[id].getPositionX() << ""
+			<< aircraft[id].getPositionY() << "" << aircraft[id].getPositionZ()
+			<< std::endl;
 }
-
 

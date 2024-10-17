@@ -22,7 +22,7 @@ public:
 //Constructor
 
 Comms();
-
+void runComms();
 //send command to an aircraft
 void sendCommand(const string& aircraftID, const Comms& command);
 

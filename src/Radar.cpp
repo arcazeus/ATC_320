@@ -14,6 +14,13 @@ Radar::Radar(){
 
 }
 
+void Radar::runRadar(){
+
+	scanForAircraft();
+	storeAirSpaceHistory();
+
+
+}
 void Radar::addAircraft(){
 
 }
