@@ -9,6 +9,7 @@
 
 class Operator{
 private:
+	int connectionId;
 	std::vector<int> aircraftList;  // List of aircraft being managed
 	void logCommand(const std::string& command); // Log the commands
 
