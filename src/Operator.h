@@ -5,30 +5,20 @@
 #include <vector>
 
 
-// Class representing an aircraft command
-class Command {
-public:
-    std::string aircraftID;
-    double newSpeedX;
-    double newSpeedY;
-    double newSpeedZ;
-    double newAltitude;
-
-    Command(const std::string& id, double speedX, double speedY, double speedZ, double altitude);
-};
-
 class Operator{
 private:
-	void communicateWithSystem(const Command& cmd);
+	std::vector<int> aircraftList;  // List of aircraft being managed
+	void logCommand(const std::string& command); // Log the commands
 
 public:
 	Operator();
 
-	void sendCommand(const Command& cmd);
+	~Operator();
 
-	std::string requestAircraftInfo(const std::string& aircraftID);
-
-	void displayConsole();
+    // Public member functions
+    void sendCommandToAircraft(int aircraftID, const std::string& command);
+    void requestAircraftInfo(int aircraftID);
+    void displayInfo(const std::string& info);
 };
 
 #endif
