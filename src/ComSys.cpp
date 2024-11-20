@@ -7,12 +7,15 @@
 
 using namespace std;
 
-void ComSys::runComSys() {
+	void* ComSys::startComSys(void* arg) {
+		((ComSys*) arg)->runComSys();
+			return NULL;
+
+}
+
+void ComSys::runComSys(){
 	std::cout << "Computer System Booting up..." << std::endl;
-	while (1) {
-		checkOperatorAlert();
-		checkViolations();
-	}
+	this->sendDataDisplay(1);
 }
 void ComSys::checkOperatorAlert() {
 

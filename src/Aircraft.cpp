@@ -3,9 +3,11 @@
 // Would need to be able to store aircrafts and their details
 // vector for size change at run time
 
-void Aircraft::runAircraft() {
+void* Aircraft::startAircraft(void* arg) {
 
 }
+
+
 
 Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp,
 		double yp, double zp) :

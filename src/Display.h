@@ -16,6 +16,7 @@ public:
     // Public methods
     void showAlarm(const std::string& alarmMessage);  // Show an alarm on the display
     void updateDisplay();
+    static void* startDisplay(void*);
     void runDisplay();
 
 private:

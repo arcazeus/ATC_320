@@ -160,31 +160,35 @@ void Operator::checkViolationFromCS(){
 	}
 }
 
-void Operator::runOperator(){
-
+	void* Operator::startOperator(void* arg){
+		((Operator*) arg)->runOperator();
+			return NULL;
 	std::cout << "Operator Console starting..." << std::endl;
 
 	// Ensure the connection to the Computer System is established
 	if (connectionId == -1) {
 		std::cerr << "Error: Unable to start Operator Console, no connection to Computer System!" << std::endl;
-		return;
 	} else {
 		std::cout << "Computer System Connected." << std::endl;
 	}
 
 	std::cout << "Operator Console started" << std::endl;
 
-	// Main operator loop: check for aircraft violations and handle other tasks
-	while (true) {
-		// Check for violations from the Computer System
-		checkViolationFromCS();
-
-		// Add more functionality here if needed (e.g., process incoming commands)
-
-		// Sleep for a short time before the next loop iteration (optional)
-		usleep(1000000);  // 1 second
-	}
-
 }
 
+void Operator::runOperator(){
 
+	std::cout << "Operator Console starting..." << std::endl;
+
+	// Main operator loop: check for aircraft violations and handle other tasks
+		while (true) {
+			// Check for violations from the Computer System
+			this->checkViolationFromCS();
+
+			// Add more functionality here if needed (e.g., process incoming commands)
+
+			// Sleep for a short time before the next loop iteration (optional)
+			usleep(1000000);  // 1 second
+		}
+
+}

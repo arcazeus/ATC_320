@@ -21,6 +21,7 @@ public:
 //Constructor
 
 	Comms();
+	static void* startComms(void* arg);
 	void runComms();
 //send command to an aircraft
 	void sendCommand(const string &aircraftID, const Comms &command);

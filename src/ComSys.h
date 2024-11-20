@@ -22,6 +22,7 @@ struct SharedMemory {
 class ComSys {
 public:
 
+	static void* startComSys(void* arg);
 	void runComSys();
 	//checks to see if any collisions happened or will happen
 	void checkViolations();

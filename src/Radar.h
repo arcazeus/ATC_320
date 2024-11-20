@@ -15,6 +15,7 @@ class Radar {
 public:
 	Radar();
 
+	static void* startRadar(void* arg);
 	void runRadar();
 	void addAircraft();
 	void scanForAircraft();

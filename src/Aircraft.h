@@ -16,7 +16,7 @@ struct Aircraft {
 	double ypost;
 	double zpost;
 
-	void runAircraft();
+	static void* startAircraft(void* arg);
 
 	Aircraft(float t, int i, double xs, double ys, double zs, double xp,
 			double yp, double zp);

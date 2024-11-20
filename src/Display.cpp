@@ -33,11 +33,14 @@ void Display::updateDisplay() {
     }
 }
 
-void Display::runDisplay(){
-	std::cout << "Initializing Display" << std::endl;
-
-	updateDisplay();
+ void* Display::startDisplay(void* arg){
+	 ((Display*) arg)->runDisplay();
+	 	return NULL;
 }
 
+void Display::runDisplay(){
+	std::cout << "Initializing Display" << std::endl;
+	this->updateDisplay();
+}
 
 

@@ -14,13 +14,23 @@ Radar::Radar(){
 
 }
 
-void Radar::runRadar(){
+	void* Radar::startRadar(void* arg){
+		((Radar*) arg)->runRadar();
+			return NULL;
 
-	scanForAircraft();
-	storeAirSpaceHistory();
 
 
 }
+
+void Radar::runRadar(){
+	std::cout<<"Radar running..."<<std::endl;
+	while(1){
+
+		this->scanForAircraft();
+			this->storeAirSpaceHistory();
+	}
+}
+
 void Radar::addAircraft(){
 
 }
