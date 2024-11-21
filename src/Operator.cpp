@@ -16,7 +16,6 @@
 
 // OperatorConsole constructor
 Operator::Operator() {
-
 	std::ofstream logFile("logFile");
 	 // Establish a connection to the Computer System's communication channel
 	connectionId = name_open("computerSystemServer", 0);
@@ -160,25 +159,23 @@ void Operator::checkViolationFromCS(){
 	}
 }
 
-	void* Operator::startOperator(void* arg){
-		((Operator*) arg)->runOperator();
-			return NULL;
-	std::cout << "Operator Console starting..." << std::endl;
-
-	// Ensure the connection to the Computer System is established
-	if (connectionId == -1) {
-		std::cerr << "Error: Unable to start Operator Console, no connection to Computer System!" << std::endl;
-	} else {
-		std::cout << "Computer System Connected." << std::endl;
-	}
-
-	std::cout << "Operator Console started" << std::endl;
-
+void* Operator::startOperator(void* arg){
+//	Operator* instance = (Operator*)arg;
+//	instance->runOperator();
+//	std::cout << "Operator Console starting..." << std::endl;
+//
+//	// Ensure the connection to the Computer System is established
+//	if (instance->connectionId == -1) {
+//		std::cerr << "Error: Unable to start Operator Console, no connection to Computer System!" << std::endl;
+//	} else {
+//		std::cout << "Computer System Connected." << std::endl;
+//	}
+//
+//	std::cout << "Operator Console started" << std::endl;
+	return NULL;
 }
 
 void Operator::runOperator(){
-
-	std::cout << "Operator Console starting..." << std::endl;
 
 	// Main operator loop: check for aircraft violations and handle other tasks
 		while (true) {

@@ -23,7 +23,7 @@
 
 int main() {
 	// thread IDs
-			pthread_t ComSys_tid,Operator_tid, Radar_tid, Display_tid, Comms_tid, Aircraft_tid[MAX_AIRCRAFTS];
+	pthread_t ComSys_tid,Operator_tid, Radar_tid, Display_tid, Comms_tid, Aircraft_tid[MAX_AIRCRAFTS];
 
 	ComSys ComSysObj = ComSys();
 	Radar RadarObj = Radar();
@@ -31,30 +31,30 @@ int main() {
 	Comms CommsObj = Comms();
 	Operator OperatorObj = Operator();
 	std::vector<Aircraft> aircrafts;
-	std::ifstream file("ENROUTE");
+//	std::ifstream file("ENROUTE");
+//
+//	if (!file.is_open()) {
+//		std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
+//		return 1;
+//	}
 
-	if (!file.is_open()) {
-		std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
-		return 1;
-	}
-
-	std::string line;
-	while (std::getline(file, line)) {
-		std::istringstream iss(line);
-		float time;
-		int ID;
-		double x, y, z, xSpeed, ySpeed, zSpeed;
-
-		if (!(iss >> time >> ID >> x >> y >> z >> xSpeed >> ySpeed >> zSpeed)) {
-			std::cerr << "Error reading line: " << line << std::endl;
-			continue; // Skip lines that do not match the expected format
-		} else {
-			//cout << "Creating aircraft with ID: " << ID << endl;
-		}
-
-		Aircraft aircraft = Aircraft(time, ID, x, y, z, xSpeed, ySpeed, zSpeed);
-		aircrafts.push_back(aircraft);
-	}
+//	std::string line;
+//	while (std::getline(file, line)) {
+//		std::istringstream iss(line);
+//		float time;
+//		int ID;
+//		double x, y, z, xSpeed, ySpeed, zSpeed;
+//
+//		if (!(iss >> time >> ID >> x >> y >> z >> xSpeed >> ySpeed >> zSpeed)) {
+//			std::cerr << "Error reading line: " << line << std::endl;
+//			continue; // Skip lines that do not match the expected format
+//		} else {
+//			//cout << "Creating aircraft with ID: " << ID << endl;
+//		}
+//
+//		Aircraft aircraft = Aircraft(time, ID, x, y, z, xSpeed, ySpeed, zSpeed);
+//		aircrafts.push_back(aircraft);
+//	}
 
 	int size = aircrafts.size();
 	int count = 0;
@@ -108,7 +108,7 @@ int main() {
 		}
 	}
 
-	if (pthread_join(ComSys_tid, NULL) != 0) {
+	if (pthread_join(ComSys_tid, NULL) != 0){
 		perror("Failed to join ComSys thread");
 		return 1;
 	}

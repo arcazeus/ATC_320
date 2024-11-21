@@ -27,7 +27,7 @@ void Radar::runRadar(){
 	while(1){
 
 		this->scanForAircraft();
-			this->storeAirSpaceHistory();
+		this->storeAirSpaceHistory();
 	}
 }
 

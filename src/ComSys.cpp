@@ -3,19 +3,81 @@
 #include "Aircraft.h"
 #include "Operator.h"
 #include <vector>
-#include <iostream>
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
 
 using namespace std;
 
-	void* ComSys::startComSys(void* arg) {
-		((ComSys*) arg)->runComSys();
-			return NULL;
+ComSys::ComSys() : TotalNumAircraft(0), n(0){
+
+	// Register with the name service
+	name_attach_t* attach = name_attach(NULL, "computerSystemServer", 0);
+	if (attach == NULL) {
+		std::cerr << "Error: Failed to register Computer System with name service!" << std::endl;
+		return;
+	}
+
+	std::cout << "Computer System registered with name service as 'computerSystemServer'." << std::endl;
+
+//	// Main loop to process incoming messages
+//		while (true) {
+//			char msg[256];        // Buffer for received messages
+//			char reply[256];      // Buffer for reply messages
+//			int rcvid;            // Receive ID
+//
+//			// Wait for a message from the Operator
+//			rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+//			if (rcvid == -1) {
+//				std::cerr << "Error: Failed to receive message!" << std::endl;
+//				continue;
+//			}
+//
+//			// Process the received message
+//			std::string receivedMessage(msg);
+//			std::cout << "Received message: " << receivedMessage << std::endl;
+//
+//			if (receivedMessage.find("RequestInfo") == 0) {
+//				// Handle a request for aircraft information
+//				int aircraftId = std::stoi(receivedMessage.substr(11));
+//				if (aircraftId >= 0 && aircraftId < TotalNumAircraft) {
+//					std::stringstream info;
+//					info << "Aircraft " << aircraft[aircraftId].getId()
+//						 << " Position: X=" << aircraft[aircraftId].getPositionX()
+//						 << ", Y=" << aircraft[aircraftId].getPositionY()
+//						 << ", Z=" << aircraft[aircraftId].getPositionZ();
+//					strcpy(reply, info.str().c_str());
+//				} else {
+//					strcpy(reply, "Error: Invalid Aircraft ID");
+//				}
+//			} else if (receivedMessage.find("ViolationCheck") == 0) {
+//				// Check for violations and respond
+//				checkViolations();
+//				strcpy(reply, "Violation check completed.");
+//			} else {
+//				// Default response for unknown commands
+//				strcpy(reply, "Error: Unknown command");
+//			}
+//
+//			// Send a reply back to the sender
+//			MsgReply(rcvid, 0, reply, strlen(reply) + 1);
+//		}
+//
+//		// Detach the name service before exiting
+//		name_detach(attach, 0);
+}
+
+void* ComSys::startComSys(void* arg) {
+	((ComSys*) arg)->runComSys();
+	return NULL;
 
 }
 
 void ComSys::runComSys(){
 	std::cout << "Computer System Booting up..." << std::endl;
+
 	this->sendDataDisplay(1);
+
+
 }
 void ComSys::checkOperatorAlert() {
 
