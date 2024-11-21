@@ -6,6 +6,7 @@
 #include "Aircraft.h"
 #include "Operator.h"
 #include "ComSys.h"
+#include <map>
 
 #define MAX_AIRCRAFT 120;
 
@@ -20,10 +21,13 @@ public:
 	void addAircraft();
 	void scanForAircraft();
 	void storeAirSpaceHistory();
+	void updateAircraftData(int aircraftID, const std::string& data);
+	void setAircraftIDs(const std::vector<int>& aircraftIDs);
 
 private:
-	std::string History = "History.txt";
-	std::vector<Aircraft> Aircrafts;
+	std::string History;
+	std::vector<int> aircraftIDs;
+	std::map<int, std::string> aircraftDataMap;
 
 };
 

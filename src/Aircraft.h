@@ -3,44 +3,52 @@
 
 #include <iostream>
 #include <vector>
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
 
 using namespace std;
 
-struct Aircraft {
-	float time;
-	int id;
-	double xspeed;
-	double yspeed;
-	double zspeed;
-	double xpost;
-	double ypost;
-	double zpost;
+class Aircraft {
+public:
+    // Constructor matching the parameters in main.cpp
+    Aircraft(int id, double xpost, double ypost, double zpost, double xspeed, double yspeed, double zspeed, float time);
 
-	static void* startAircraft(void* arg);
+    static void* startAircraft(void* arg);
+    void runAircraft();
+    void updatePosition();
+    void executeCommand(const std::string& command);
+    void checkForMessages(name_attach_t* attach);
+    void handleMessage(int rcvid, const char* msg);
 
-	Aircraft(float t, int i, double xs, double ys, double zs, double xp,
-			double yp, double zp);
-	void display(const Aircraft &aircraft);
-	// Getters
-	float getTime() const;
-	int getId() const;
-	double getSpeedX() const;
-	double getSpeedY() const;
-	double getSpeedZ() const;
-	double getPositionX() const;
-	double getPositionY() const;
-	double getPositionZ() const;
+    // Getters
+    float getTime() const;
+    int getId() const;
+    double getSpeedX() const;
+    double getSpeedY() const;
+    double getSpeedZ() const;
+    double getPositionX() const;
+    double getPositionY() const;
+    double getPositionZ() const;
 
-	// Setters
-	void setTime(float t);
-	void setId(int i);
-	void setXspeed(double xs);
-	void setYspeed(double ys);
-	void setZspeed(double zs);
-	void setXpost(double xp);
-	void setYpost(double yp);
-	void setZpost(double zp);
+    // Setters
+    void setTime(float time);
+    void setId(int id);
+    void setXspeed(double xs);
+    void setYspeed(double ys);
+    void setZspeed(double zs);
+    void setXpost(double xp);
+    void setYpost(double yp);
+    void setZpost(double zp);
 
+private:
+    float time;
+    int id;
+    double xspeed;
+    double yspeed;
+    double zspeed;
+    double xpost;
+    double ypost;
+    double zpost;
 };
 
 #endif

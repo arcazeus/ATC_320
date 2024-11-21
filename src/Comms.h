@@ -23,8 +23,7 @@ public:
 	Comms();
 	static void* startComms(void* arg);
 	void runComms();
-//send command to an aircraft
-	void sendCommand(const string &aircraftID, const Comms &command);
+	void sendCommand(int aircraftID, const std::string& command);
 
 //receive response from an aircraft
 	void receiveResponse(const string &aircraftID);
