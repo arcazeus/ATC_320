@@ -28,58 +28,51 @@
 
 int main() {
 	// thread IDs
-			pthread_t ComSys_tid,Operator_tid, Radar_tid, Display_tid, Comms_tid, Aircraft_tid[MAX_AIRCRAFTS];
+	pthread_t ComSys_tid,Operator_tid, Radar_tid, Display_tid, Comms_tid, Aircraft_tid[MAX_AIRCRAFTS];
 
-	ComSys ComSysObj = ComSys();
-	Radar RadarObj = Radar();
-	Display DisplayObj = Display();
-	Comms CommsObj = Comms();
-	Operator OperatorObj = Operator();
+	ComSys ComSysObj;
+	Radar RadarObj;
+	Display DisplayObj;
+	Comms CommsObj;
+	Operator OperatorObj;
 	std::vector<Aircraft> aircrafts;
-	std::ifstream file("ENROUTE");
 
-	if (!file.is_open()) {
-		std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
-		return 1;
-	}
-
-	std::string line;
-	while (std::getline(file, line)) {
-		std::istringstream iss(line);
-		float time;
-		int ID;
-		double x, y, z, xSpeed, ySpeed, zSpeed;
-
-		if (!(iss >> time >> ID >> x >> y >> z >> xSpeed >> ySpeed >> zSpeed)) {
-			std::cerr << "Error reading line: " << line << std::endl;
-			continue; // Skip lines that do not match the expected format
-		} else {
-			//cout << "Creating aircraft with ID: " << ID << endl;
-		}
-
-		Aircraft aircraft = Aircraft(time, ID, x, y, z, xSpeed, ySpeed, zSpeed);
+	// Example: populate aircrafts vector with some Aircraft objects
+	// In a real scenario, you might read this data from a file or another source
+	int numberOfAircrafts = 5; // For example, create 5 aircraft
+	for (int i = 0; i < numberOfAircrafts; ++i) {
+		// Create an Aircraft object with some initial parameters
+		// Adjust the parameters as needed
+		Aircraft aircraft(i, 0.0, 0.0, 1000.0 + i * 1000.0, 500.0, 0.0, 0.0, 0.0f); // time is 0.0f
 		aircrafts.push_back(aircraft);
 	}
 
-	int size = aircrafts.size();
-	int count = 0;
+	// Set the aircraft list in the ComSys
+	ComSysObj.setAircraftList(aircrafts);
+
+	// Set the aircraft IDs in the Radar (if needed)
+	std::vector<int> aircraftIDs;
+	for (const auto& aircraft : aircrafts) {
+		aircraftIDs.push_back(aircraft.getId());
+	}
+	RadarObj.setAircraftIDs(aircraftIDs);
 
 	// Creating Airplane threads
+	int size = aircrafts.size();
 	for (int i = 0; i < size; i++) {
 		if (pthread_create(&Aircraft_tid[i], NULL, &Aircraft::startAircraft,&aircrafts[i]) != 0) {
 			perror("Failed to create airplane thread");
 			return 1;
 		}
-		++count;
 		RadarObj.addAircraft();
 	}
+
 	// Creating Comsys thread
 	if (pthread_create(&ComSys_tid, NULL, &ComSys::startComSys, &ComSysObj)
 			!= 0) {
 		perror("Failed to create ComSys thread");
 		return 1;
 	}
-
 	// Creating Radar thread
 	if (pthread_create(&Radar_tid, NULL, &Radar::startRadar, &RadarObj) != 0) {
 		perror("Failed to create Radar thread");
@@ -106,14 +99,14 @@ int main() {
 	}
 
 	//joining threads
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < size; i++) {
 		if (pthread_join(Aircraft_tid[i], NULL) != 0) {
-			perror("Failed to join Aircraft Thread");
+			perror("Failed to join Aircraft thread");
 			return 1;
 		}
 	}
 
-	if (pthread_join(ComSys_tid, NULL) != 0) {
+	if (pthread_join(ComSys_tid, NULL) != 0){
 		perror("Failed to join ComSys thread");
 		return 1;
 	}

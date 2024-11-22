@@ -1,4 +1,5 @@
 #include <thread>
+<<<<<<< HEAD
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,6 +23,11 @@
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
+=======
+#include <chrono>
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
+>>>>>>> peter
 
 // Constructor
 Display::Display() {
@@ -53,6 +59,7 @@ void Display::updateDisplay() {
     }
 }
 
+<<<<<<< HEAD
  void* Display::startDisplay(void* arg){
 	 const char *shm_name = "/shm_aircraft_data";
 	 		    const int SIZE = sizeof(SharedMemory);
@@ -63,11 +70,39 @@ void Display::updateDisplay() {
 
 	 ((Display*) arg)->runDisplay();
 	 	return NULL;
+=======
+// In Display.cpp
+
+void* Display::startDisplay(void* arg) {
+    ((Display*) arg)->runDisplay();
+    return NULL;
+>>>>>>> peter
 }
 
-void Display::runDisplay(){
-	std::cout << "Initializing Display" << std::endl;
-	this->updateDisplay();
+void Display::runDisplay() {
+    name_attach_t* attach = name_attach(NULL, "displayServer", 0);
+    if (attach == NULL) {
+        std::cerr << "Error: Failed to register Display with name service!" << std::endl;
+        return;
+    }
+
+    while (true) {
+        char msg[256];
+        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+        if (rcvid != -1) {
+            // Parse and display the data
+            std::string data(msg);
+            std::cout << "Display Update: " << data << std::endl;
+
+            // Send acknowledgment
+            MsgReply(rcvid, 0, NULL, 0);
+        }
+
+        // Sleep or perform other tasks
+        sleep(1);
+    }
+
+    name_detach(attach, 0);
 }
 
 

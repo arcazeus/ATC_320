@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <thread>
 #include <iostream>
 #include <fstream>
@@ -19,11 +20,21 @@
 #include <semaphore.h>
 #include "ComSys.h"
 #include "Radar.h"
+=======
+#include <iostream>
+#include <sstream>
+#include <unistd.h>
+#include <pthread.h>
+#include "globals.h"
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
+>>>>>>> peter
 #include "Aircraft.h"
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
 
+<<<<<<< HEAD
 // Would need to be able to store aircrafts and their details
 // vector for size change at run time
 
@@ -36,6 +47,119 @@ Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp,
 		double yp, double zp) :
 		time(t), id(i), xspeed(xs), yspeed(ys), zspeed(zs), xpost(xp), ypost(
 				yp), zpost(zp) {
+=======
+Aircraft::Aircraft(int id, double xpost, double ypost, double zpost,
+                   double xspeed, double yspeed, double zspeed, float time)
+    : id(id), xpost(xpost), ypost(ypost), zpost(zpost),
+      xspeed(xspeed), yspeed(yspeed), zspeed(zspeed), time(time) {
+}
+
+void* Aircraft::startAircraft(void* arg) {
+    ((Aircraft*) arg)->runAircraft();
+    return NULL;
+}
+
+void Aircraft::runAircraft() {
+    std::string aircraftName = "Aircraft_" + std::to_string(this->id);
+
+    name_attach_t* attach = name_attach(NULL, aircraftName.c_str(), 0);
+    if (attach == NULL) {
+        std::cerr << "Error: Failed to register Aircraft " << this->id << " with name service!" << std::endl;
+        return;
+    }
+
+    std::cout << "Aircraft " << this->id << " registered as '" << aircraftName << "'." << std::endl;
+
+    while (true) {
+        // Update position
+        updatePosition();
+
+        // Check for messages
+        checkForMessages(attach);
+
+        // Sleep for 1 second
+        sleep(1);
+    }
+
+    name_detach(attach, 0);
+}
+
+void Aircraft::updatePosition() {
+    // Update position based on speed
+    this->xpost += this->xspeed;
+    this->ypost += this->yspeed;
+    this->zpost += this->zspeed;
+
+    this->time += 1.0f;
+    {
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "Aircraft " << this->id << " at time " << this->time
+				  << " position updated to ("
+				  << this->xpost << ", "
+				  << this->ypost << ", "
+				  << this->zpost << ")." << std::endl;
+	}
+}
+
+void Aircraft::checkForMessages(name_attach_t* attach) {
+    char msg[256];
+    int rcvid;
+
+    // Non-blocking receive
+    rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+    if (rcvid != -1) {
+        handleMessage(rcvid, msg);
+    }
+}
+
+void Aircraft::handleMessage(int rcvid, const char* msg) {
+    std::string receivedMessage(msg);
+
+    if (receivedMessage == "RadarRequest") {
+        // Respond to Radar
+        std::stringstream response;
+        response << "ID:" << this->id
+                 << " X:" << this->xpost
+                 << " Y:" << this->ypost
+                 << " Z:" << this->zpost
+                 << " SpeedX:" << this->xspeed
+                 << " SpeedY:" << this->yspeed
+                 << " SpeedZ:" << this->zspeed;
+
+        MsgReply(rcvid, 0, response.str().c_str(), response.str().size() + 1);
+    } else if (receivedMessage.find("Command:") == 0) {
+        // Execute command
+        std::string command = receivedMessage.substr(8);
+        executeCommand(command);
+
+        // Acknowledge
+        MsgReply(rcvid, 0, "Command Executed", strlen("Command Executed") + 1);
+    } else {
+        MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
+    }
+}
+
+void Aircraft::executeCommand(const std::string& command) {
+    if (command.find("ChangeSpeedX:") == 0) {
+        double newSpeedX = std::stod(command.substr(13));
+        this->xspeed = newSpeedX;
+        std::cout << "Aircraft " << this->id << " changed SpeedX to " << newSpeedX << std::endl;
+    } else if (command.find("ChangeSpeedY:") == 0) {
+        double newSpeedY = std::stod(command.substr(13));
+        this->yspeed = newSpeedY;
+        std::cout << "Aircraft " << this->id << " changed SpeedY to " << newSpeedY << std::endl;
+    } else if (command.find("ChangeSpeedZ:") == 0) {
+        double newSpeedZ = std::stod(command.substr(13));
+        this->zspeed = newSpeedZ;
+        std::cout << "Aircraft " << this->id << " changed SpeedZ to " << newSpeedZ << std::endl;
+    } else if (command.find("ChangeAltitude:") == 0) {
+        double newAltitude = std::stod(command.substr(15));
+        this->zpost = newAltitude;
+        std::cout << "Aircraft " << this->id << " changed Altitude to " << newAltitude << std::endl;
+    } else {
+        std::cout << "Aircraft " << this->id << " received unknown command: " << command << std::endl;
+    }
+>>>>>>> peter
 }
 
 // Getters
@@ -91,10 +215,12 @@ void Aircraft::setZpost(double zp) {
 }
 
 void display(const Aircraft &aircraft) {
-	std::cout << "Aircraft ID: " << aircraft.id << "\n" << "Time: "
-			<< aircraft.time << "\n" << "X Speed: " << aircraft.xspeed << "\n"
-			<< "Y Speed: " << aircraft.yspeed << "\n" << "Z Speed: "
-			<< aircraft.zspeed << "\n" << "X Position: " << aircraft.xpost
-			<< "\n" << "Y Position: " << aircraft.ypost << "\n"
-			<< "Z Position: " << aircraft.zpost << "\n";
+    std::cout << "Aircraft ID: " << aircraft.getId() << "\n"
+              << "Time: " << aircraft.getTime() << "\n"
+              << "X Speed: " << aircraft.getSpeedX() << "\n"
+              << "Y Speed: " << aircraft.getSpeedY() << "\n"
+              << "Z Speed: " << aircraft.getSpeedZ() << "\n"
+              << "X Position: " << aircraft.getPositionX() << "\n"
+              << "Y Position: " << aircraft.getPositionY() << "\n"
+              << "Z Position: " << aircraft.getPositionZ() << "\n";
 }

@@ -10,6 +10,7 @@
 #include <cstring>
 #include <vector>
 #include <unistd.h>
+<<<<<<< HEAD
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -23,27 +24,40 @@
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
+=======
+#include "globals.h"
+
+>>>>>>> peter
 /////Constructors/////
 
 // OperatorConsole constructor
 Operator::Operator() {
-
 	std::ofstream logFile("logFile");
-	 // Establish a connection to the Computer System's communication channel
-	connectionId = name_open("computerSystemServer", 0);
-	if (connectionId == -1) {
-		std::cerr << "Failed to connect to the Computer System!" << std::endl;
-	} else {
-        std::cout << "Successfully connected to Computer System via name lookup." << std::endl;
-    }
+	while ((connectionId = name_open("computerSystemServer", 0)) == -1) {
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			std::cerr << "Failed to connect to the Computer System. Retrying in 1 second..." << std::endl;
+		}
+		sleep(1); // Wait before retrying
+	}
+	{
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "Successfully connected to Computer System via name lookup." << std::endl;
+	}
 
 	// Open a log file to store commands (append mode)
 
 	if (logFile.is_open()) {
-		std::cout << "Operator Console initialized. Log file created." << std::endl;
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			std::cout << "Operator Console initialized. Log file created." << std::endl;
+		}
 		logFile << "Operator Console started.\n";  // Log initialization event
 	} else {
-		std::cerr << "Error: Unable to open log file." << std::endl;
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			std::cerr << "Error: Unable to open log file." << std::endl;
+		}
 	}
 
 
@@ -134,6 +148,22 @@ void Operator::displayInfo(const std::string& info) {
     // Logic to display the info on the console
 }
 
+void Operator::changeParameterN(int newN) {
+    int coid = name_open("computerSystemServer", 0);
+    if (coid == -1) {
+        std::cerr << "Failed to connect to Computer System: " << strerror(errno) << std::endl;
+        return;
+    }
+
+    std::string command = "ChangeN" + std::to_string(newN);
+
+    if (MsgSend(coid, command.c_str(), command.size() + 1, NULL, 0) == -1) {
+        std::cerr << "Failed to send command to Computer System: " << strerror(errno) << std::endl;
+    }
+
+    name_close(coid);
+}
+
 // Private method to log the commands sent
 void Operator::logCommand(const std::string& command) {
 	std::ofstream logFile("logFile");
@@ -171,6 +201,7 @@ void Operator::checkViolationFromCS(){
 	}
 }
 
+<<<<<<< HEAD
 	void* Operator::startOperator(void* arg){
 		const char *shm_name = "/shm_aircraft_data";
 		    const int SIZE = sizeof(SharedMemory);
@@ -182,22 +213,36 @@ void Operator::checkViolationFromCS(){
 		((Operator*) arg)->runOperator();
 			return NULL;
 
+=======
+// In Operator.cpp
+>>>>>>> peter
 
+void* Operator::startOperator(void* arg) {
+    ((Operator*) arg)->runOperator();
+    return NULL;
 }
 
-void Operator::runOperator(){
+void Operator::runOperator() {
+    name_attach_t* attach = name_attach(NULL, "operatorServer", 0);
+    if (attach == NULL) {
+        std::cerr << "Error: Failed to register Operator with name service!" << std::endl;
+        return;
+    }
 
-	std::cout << "Operator Console starting..." << std::endl;
+    while (true) {
+        char msg[256];
+        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+        if (rcvid != -1) {
+            // Display the alert
+            std::cout << "ALERT: " << msg << std::endl;
 
-	// Main operator loop: check for aircraft violations and handle other tasks
-		while (true) {
-			// Check for violations from the Computer System
-			this->checkViolationFromCS();
+            // Send acknowledgment
+            MsgReply(rcvid, 0, NULL, 0);
+        }
 
-			// Add more functionality here if needed (e.g., process incoming commands)
+        // Sleep or perform other tasks
+        sleep(1);
+    }
 
-			// Sleep for a short time before the next loop iteration (optional)
-			usleep(1000000);  // 1 second
-		}
-
+    name_detach(attach, 0);
 }

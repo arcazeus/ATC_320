@@ -11,6 +11,8 @@
 #include "Aircraft.h"
 #include "Operator.h"
 #include "Radar.h"
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
 
 #define MAX_AIRCRAFTS 120
 
@@ -25,26 +27,24 @@ struct SharedMemory {
 class ComSys {
 public:
 
+	ComSys();
+
+	~ComSys();
 	static void* startComSys(void* arg);
 	void runComSys();
-	//checks to see if any collisions happened or will happen
-	void checkViolations();
-	void checkOperatorAlert();
-	//sends an alert to operator about current and future safety violation
-	void operatorAlert(int id_1, int id_2);
-	//sends all known aircrafts to the Display
-	void sendDataDisplay(int id);
-
-	//Common setters & getters
-	void setTotalNumAircraft();
-	int getNumAircraft();
+	void setAircraftList(const std::vector<Aircraft>& aircraftList);
 
 private:
 	int TotalNumAircraft;
-//look ahead parameter;must be set by operator.
 	int n;
-//
 	vector<Aircraft> aircraft;
+	name_attach_t* attach;
+
+	void handleMessage(int rcvid, const char* msg);
+	void checkViolations();
+	void operatorAlert(int id_1, int id_2);
+	void sendDataDisplay(int id);
+	void sendDataDisplayAllAircraft();
 };
 
 #endif
