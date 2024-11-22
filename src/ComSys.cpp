@@ -9,40 +9,11 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
-<<<<<<< HEAD
-#include <unistd.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <cstring>
-#include <pthread.h>
-#include <errno.h>
-#include <semaphore.h>
-#include "ComSys.h"
-#include "Radar.h"
-#include "Aircraft.h"
-#include "Comms.h"
-#include "Operator.h"
-#include "Display.h"
-
-
-using namespace std;
-
-	void* ComSys::startComSys(void* arg) {
-		const char *shm_name = "/shm_aircraft_data";
-				    const int SIZE = sizeof(SharedMemory);
-
-				    // Open shared memory
-				    int shm_fd = shm_open(shm_name, O_RDWR, 0666);
-				    SharedMemory *shared = static_cast<SharedMemory*>(mmap(0, SIZE, PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0));
-
-		((ComSys*) arg)->runComSys();
-			return NULL;
-=======
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
 #include <cmath>
 #include "globals.h"
+#include "ComSys.h"
 
 using namespace std;
 
@@ -69,7 +40,7 @@ ComSys::~ComSys() {
 void* ComSys::startComSys(void* arg) {
 	((ComSys*) arg)->runComSys();
 	return NULL;
->>>>>>> peter
+
 
 }
 
@@ -150,48 +121,7 @@ void ComSys::checkViolations() {
             double deltaY = aircraft[i].getPositionY() - aircraft[j].getPositionY();
             double deltaZ = aircraft[i].getPositionZ() - aircraft[j].getPositionZ();
 
-<<<<<<< HEAD
-	sem_wait(&shared->aircraft_mutex[i]);
-	//checks for any current violations
-	for (int i = 0; i < TotalNumAircraft; i++) {
-		for (int j = 1; j < TotalNumAircraft; j++) {
-			temp_X = shared->aircraft[i].getPositionX() - shared->aircraft[j].getPositionX();
-			temp_Y = shared->aircraft[i].getPositionY() - shared->aircraft[j].getPositionY();
-			temp_Z = shared->aircraft[i].getPositionZ() - shared->aircraft[j].getPositionZ();
 
-			if (temp_X <= 3000 || temp_Y <= 3000 || temp_Z <= 1000) {
-				operatorAlert(i, j);
-			}
-
-			else {
-				break;
-			}
-		}
-	}
-	sem_post(&shared->aircraft_mutex[i]);
-
-	sem_wait(&shared->aircraft_mutex[i]);
-	// checks for future violations
-	for (int i = 0; i < TotalNumAircraft; i++) {
-		for (int j = 1; j < TotalNumAircraft; j++) {
-			temp_X = shared->aircraft[i].getPositionX() + n * shared->aircraft[i].getSpeedX()
-					- shared->aircraft[j].getPositionX() + n * shared->aircraft[j].getSpeedX();
-			temp_Y = shared->aircraft[i].getPositionY() + n * shared->aircraft[i].getSpeedY()
-					- aircraft[j].getPositionY() + n * aircraft[j].getSpeedY();
-			temp_Z = aircraft[i].getPositionY() + n * aircraft[i].getSpeedY()
-					- aircraft[j].getPositionY() + n * aircraft[j].getSpeedY();
-
-			if (temp_X <= 3000 || temp_Y <= 3000 || temp_Z <= 1000) {
-				operatorAlert(i, j);
-			}
-
-			else {
-				break;
-			}
-		}
-	}
-	sem_post(&shared->aircraft_mutex[i]);
-=======
             // Future positions after n seconds
             double futureDeltaX = (aircraft[i].getPositionX() + aircraft[i].getSpeedX() * n) -
                                   (aircraft[j].getPositionX() + aircraft[j].getSpeedX() * n);
@@ -211,7 +141,7 @@ void ComSys::checkViolations() {
             }
         }
     }
->>>>>>> peter
+
 }
 
 void ComSys::operatorAlert(int id_1, int id_2) {

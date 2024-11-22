@@ -1,5 +1,4 @@
 #include <thread>
-<<<<<<< HEAD
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -23,11 +22,9 @@
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
-=======
 #include <chrono>
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
->>>>>>> peter
 
 // Constructor
 Display::Display() {
@@ -59,7 +56,7 @@ void Display::updateDisplay() {
     }
 }
 
-<<<<<<< HEAD
+
  void* Display::startDisplay(void* arg){
 	 const char *shm_name = "/shm_aircraft_data";
 	 		    const int SIZE = sizeof(SharedMemory);
@@ -70,13 +67,7 @@ void Display::updateDisplay() {
 
 	 ((Display*) arg)->runDisplay();
 	 	return NULL;
-=======
-// In Display.cpp
 
-void* Display::startDisplay(void* arg) {
-    ((Display*) arg)->runDisplay();
-    return NULL;
->>>>>>> peter
 }
 
 void Display::runDisplay() {

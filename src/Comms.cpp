@@ -21,14 +21,12 @@
 #include "Radar.h"
 #include "Aircraft.h"
 #include "Comms.h"
-<<<<<<< HEAD
 #include "Operator.h"
 #include "Display.h"
-=======
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
 #include "globals.h"
->>>>>>> peter
+
 
 Comms::Comms() {
 

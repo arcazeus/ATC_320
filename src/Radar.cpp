@@ -20,33 +20,10 @@
 #include "ComSys.h"
 #include "Radar.h"
 #include "Aircraft.h"
-<<<<<<< HEAD
-#include "Comms.h"
-#include "Operator.h"
-#include "Display.h"
-
-Radar::Radar() {
-
-}
-
-void* Radar::startRadar(void *arg) {
-
-	((Radar*)arg)->runRadar();
-
-	return NULL;
-
-}
-
-void Radar::runRadar() {
-	std::cout << "Radar running..." << std::endl;
-	while (1) {
-
-		this->scanForAircraft();
-		this->storeAirSpaceHistory();
-=======
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
 #include "globals.h"
+#include "Logger.h"
 
 Radar::Radar(){
     // Initialize aircraftIDs with IDs from 1 to 120
@@ -66,7 +43,7 @@ void Radar::runRadar(){
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Radar running..." << std::endl;
->>>>>>> peter
+
 	}
     while(1){
         this->scanForAircraft();
@@ -81,36 +58,13 @@ void Radar::addAircraft() {
 }
 
 void Radar::scanForAircraft() {
-<<<<<<< HEAD
-	std::cout << "Scanning...\n";
-	sem_wait(&shared->aircraft_mutex[i]);
-	for (int i = 0; i < 120; i++) {
-		Aircrafts.pushback(shared->aircraft);
-	}
-	sem_post(&shared->aircraft_mutex[i]);
-}
-
-void Radar::storeAirSpaceHistory() {
-	std::ofstream outfile;
-
-	// Open the file in append mode (optional), or trunc mode (default)
-	outfile.open(History);
-
-	// Check if the file is open
-	if (outfile.is_open()) {
-		// Write content to the file
-		//  outfile << Aircrafts << std::endl;
-
-		// Close the file after writing
-		outfile.close();
-		std::cout << "Data written to file successfully!" << std::endl;
-	} else {
-		std::cerr << "Error: Could not open file " << History << std::endl;
-=======
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Scanning..." << std::endl;
->>>>>>> peter
+		for (int i = 0; i < 120; i++) {
+				//Aircrafts.pushback(shared->aircraft);
+			std::cout<<"adding plane"<<std::endl;
+			}
 	}
 
 
@@ -157,11 +111,9 @@ void Radar::setAircraftIDs(const std::vector<int>& aircraftIDs) {
     this->aircraftIDs = aircraftIDs;
 }
 
-<<<<<<< HEAD
-=======
+
 void Radar::storeAirSpaceHistory(){
     std::ofstream outfile;
-
     // Open the file in append mode
     outfile.open(History, std::ios_base::app);
 
@@ -184,8 +136,9 @@ void Radar::storeAirSpaceHistory(){
     	std::lock_guard<std::mutex> lock(coutMutex);
         std::cerr << "Error: Could not open file " << History << std::endl;
     }
+
+    Airspace.log_AirSpace(History,History);
 }
 
 
 
->>>>>>> peter

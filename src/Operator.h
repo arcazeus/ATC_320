@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "Logger.h"
 
 
 class Operator{
@@ -12,13 +13,7 @@ private:
 	int connectionId;
 	std::vector<int> aircraftList;  // List of aircraft being managed
 	void logCommand(const std::string& command); // Log the commands
-	const char *shm_name = "/shm_aircraft_data";
-			const int SIZE = sizeof(SharedMemory);
 
-			// Open shared memory
-			int shm_fd = shm_open(shm_name, O_RDWR, 0666);
-			SharedMemory *shared = static_cast<SharedMemory*>(mmap(0, SIZE,
-			PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0));
 
 public:
 	Operator();
@@ -36,6 +31,10 @@ public:
 
     void setConnectionId(int connectionId);
 	int getConnectionId() const;
+
+private:
+	Logger OperatorLog;
+	const char*  commands="Operatorcommands";
 };
 
 #endif

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 #include <thread>
 #include <iostream>
 #include <fstream>
@@ -20,7 +20,6 @@
 #include <semaphore.h>
 #include "ComSys.h"
 #include "Radar.h"
-=======
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -28,26 +27,12 @@
 #include "globals.h"
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
->>>>>>> peter
 #include "Aircraft.h"
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
 
-<<<<<<< HEAD
-// Would need to be able to store aircrafts and their details
-// vector for size change at run time
 
-void* Aircraft::startAircraft(void *arg) {
-	 ((Aircraft*) arg)->Aircraft();
-		 	return NULL;
-}
-
-Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp,
-		double yp, double zp) :
-		time(t), id(i), xspeed(xs), yspeed(ys), zspeed(zs), xpost(xp), ypost(
-				yp), zpost(zp) {
-=======
 Aircraft::Aircraft(int id, double xpost, double ypost, double zpost,
                    double xspeed, double yspeed, double zspeed, float time)
     : id(id), xpost(xpost), ypost(ypost), zpost(zpost),
@@ -159,7 +144,7 @@ void Aircraft::executeCommand(const std::string& command) {
     } else {
         std::cout << "Aircraft " << this->id << " received unknown command: " << command << std::endl;
     }
->>>>>>> peter
+
 }
 
 // Getters
