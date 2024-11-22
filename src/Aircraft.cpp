@@ -1,13 +1,36 @@
+#include <thread>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/ipc.h>
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
+#include <pthread.h>
+#include <errno.h>
+#include <semaphore.h>
+#include "ComSys.h"
+#include "Radar.h"
 #include "Aircraft.h"
+#include "Comms.h"
+#include "Operator.h"
+#include "Display.h"
 
 // Would need to be able to store aircrafts and their details
 // vector for size change at run time
 
-void* Aircraft::startAircraft(void* arg) {
-
+void* Aircraft::startAircraft(void *arg) {
+	 ((Aircraft*) arg)->Aircraft();
+		 	return NULL;
 }
-
-
 
 Aircraft::Aircraft(float t, int i, double xs, double ys, double zs, double xp,
 		double yp, double zp) :

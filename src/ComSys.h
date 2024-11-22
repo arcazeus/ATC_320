@@ -3,6 +3,7 @@
 #define ComSys_H
 
 #include <iostream>
+#include <semaphore.h>
 #include <cstring>
 #include <vector>
 #include <mutex>
@@ -18,6 +19,8 @@ using namespace std;
 struct SharedMemory {
 	Aircraft aircrafts[MAX_AIRCRAFTS];
 	pthread_mutex_t MasterLock = PTHREAD_MUTEX_INITIALIZER;
+	 sem_t aircraft_mutex[MAX_AIRCRAFTS];
+	    sem_t shared_mutex;
 };
 class ComSys {
 public:

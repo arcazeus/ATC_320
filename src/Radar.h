@@ -7,7 +7,7 @@
 #include "Operator.h"
 #include "ComSys.h"
 
-#define MAX_AIRCRAFT 120;
+#define MAX_AIRCRAFT 120
 
 using namespace std;
 
@@ -24,6 +24,13 @@ public:
 private:
 	std::string History = "History.txt";
 	std::vector<Aircraft> Aircrafts;
+	const char *shm_name = "/shm_aircraft_data";
+			const int SIZE = sizeof(SharedMemory);
+
+			// Open shared memory
+			int shm_fd = shm_open(shm_name, O_RDWR, 0666);
+			SharedMemory *shared = static_cast<SharedMemory*>(mmap(0, SIZE,
+			PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0));
 
 };
 

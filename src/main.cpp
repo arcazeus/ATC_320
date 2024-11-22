@@ -10,8 +10,13 @@
 #include <cstring>
 #include <vector>
 #include <unistd.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
 #include <pthread.h>
 #include <errno.h>
+#include <semaphore.h>
 #include "ComSys.h"
 #include "Radar.h"
 #include "Aircraft.h"
