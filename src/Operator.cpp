@@ -19,33 +19,37 @@
 Operator::Operator() {
 
 	std::ofstream logFile("logFile");
-		while ((connectionId = name_open("computerSystemServer", 0)) == -1) {
-			{
-				std::lock_guard<std::mutex> lock(coutMutex);
-				std::cerr << "Failed to connect to the Computer System. Retrying in 1 second..." << std::endl;
-			}
-			sleep(1); // Wait before retrying
-		}
+	while ((connectionId = name_open("computerSystemServer", 0)) == -1) {
 		{
 			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cout << "Successfully connected to Computer System via name lookup." << std::endl;
+			std::cerr
+					<< "Failed to connect to the Computer System. Retrying in 1 second..."
+					<< std::endl;
 		}
+		sleep(1); // Wait before retrying
+	}
+	{
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout
+				<< "Successfully connected to Computer System via name lookup."
+				<< std::endl;
+	}
 
-		// Open a log file to store commands (append mode)
+	// Open a log file to store commands (append mode)
 
-		if (logFile.is_open()) {
-			{
-				std::lock_guard<std::mutex> lock(coutMutex);
-				std::cout << "Operator Console initialized. Log file created." << std::endl;
-			}
-			logFile << "Operator Console started.\n";  // Log initialization event
-		} else {
-			{
-				std::lock_guard<std::mutex> lock(coutMutex);
-				std::cerr << "Error: Unable to open log file." << std::endl;
-			}
+	if (logFile.is_open()) {
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			std::cout << "Operator Console initialized. Log file created."
+					<< std::endl;
 		}
-
+		logFile << "Operator Console started.\n";  // Log initialization event
+	} else {
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			std::cerr << "Error: Unable to open log file." << std::endl;
+		}
+	}
 
 }
 
@@ -53,13 +57,13 @@ Operator::Operator() {
 Operator::~Operator() {
 
 	std::ofstream logFile("logFile");
-		if (connectionId != -1) {
-		        name_close(connectionId);
-		    }
-		if (logFile.is_open()) {
-			logFile << "Operator Console shutting down.\n";  // Log shutdown event
-			logFile.close();  // Close the log file
-		}
+	if (connectionId != -1) {
+		name_close(connectionId);
+	}
+	if (logFile.is_open()) {
+		logFile << "Operator Console shutting down.\n";  // Log shutdown event
+		logFile.close();  // Close the log file
+	}
 }
 
 /////Setters & Getters////
@@ -109,19 +113,21 @@ void Operator::sendCommandToAircraft(int aircraftID,
 }
 
 void Operator::changeParameterN(int newN) {
-    int coid = name_open("computerSystemServer", 0);
-    if (coid == -1) {
-        std::cerr << "Failed to connect to Computer System: " << strerror(errno) << std::endl;
-        return;
-    }
+	int coid = name_open("computerSystemServer", 0);
+	if (coid == -1) {
+		std::cerr << "Failed to connect to Computer System: " << strerror(errno)
+				<< std::endl;
+		return;
+	}
 
-    std::string command = "ChangeN" + std::to_string(newN);
+	std::string command = "ChangeN" + std::to_string(newN);
 
-    if (MsgSend(coid, command.c_str(), command.size() + 1, NULL, 0) == -1) {
-        std::cerr << "Failed to send command to Computer System: " << strerror(errno) << std::endl;
-    }
+	if (MsgSend(coid, command.c_str(), command.size() + 1, NULL, 0) == -1) {
+		std::cerr << "Failed to send command to Computer System: "
+				<< strerror(errno) << std::endl;
+	}
 
-    name_close(coid);
+	name_close(coid);
 }
 
 // Method to request information about an aircraft
@@ -170,7 +176,7 @@ void Operator::logCommand(const std::string &command) {
 		std::cerr << "Error: Log file is not open!" << std::endl;
 	}
 
-	OperatorLog.log_OperatorCommand(commands,commands);
+	OperatorLog.log_OperatorCommand(commands, commands);
 }
 
 void Operator::checkViolationFromCS() {
@@ -210,27 +216,17 @@ void* Operator::startOperator(void *arg) {
 
 void Operator::runOperator() {
 
-	name_attach_t* attach = name_attach(NULL, "operatorServer", 0);
-	    if (attach == NULL) {
-	        std::cerr << "Error: Failed to register Operator with name service!" << std::endl;
-	        return;
-	    }
+	name_attach_t *attach = name_attach(NULL, "operatorServer", 0);
+	if (attach == NULL) {
+		std::cerr << "Error: Failed to register Operator with name service!"
+				<< std::endl;
+		return;
+	}
 
-	    while (true) {
-	        char msg[256];
-	        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-	        if (rcvid != -1) {
-	            // Display the alert
-	            std::cout << "ALERT: " << msg << std::endl;
+	while (true) {
 
-	            // Send acknowledgment
-	            MsgReply(rcvid, 0, NULL, 0);
-	        }
+	}
 
-	        // Sleep or perform other tasks
-	        sleep(1);
-	    }
-
-	    name_detach(attach, 0);
+	name_detach(attach, 0);
 
 }

@@ -20,6 +20,7 @@ public:
     void runDisplay();
 
 private:
+    name_attach_t *attach;
 
 };
 

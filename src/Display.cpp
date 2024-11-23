@@ -29,6 +29,18 @@
 // Constructor
 Display::Display() {
 	std::cout << "Display initialized." << std::endl;
+
+	attach = name_attach(NULL, "DisplayServer", 0);
+		if (attach == NULL) {
+			std::cerr
+					<< "Error: Failed to register Display with name service in constructor!"
+					<< std::endl;
+			// Handle error appropriately (e.g., throw exception or set a flag)
+		} else {
+			std::cout
+					<< "Display registered with name service in constructor."
+					<< std::endl;
+		}
 }
 
 // Destructor
@@ -47,7 +59,7 @@ void Display::showAlarm(const std::string &alarmMessage) {
 // Method to update the display every 5 seconds
 void Display::updateDisplay() {
     while (true) {
-		std::this_thread::sleep_for(std::chrono::seconds(5));  // Sleep for 5 seconds between updates
+
 
 		// Simulate updating the display
 		std::cout << "Display updated with the latest information..." << std::endl;
@@ -58,12 +70,6 @@ void Display::updateDisplay() {
 
 
  void* Display::startDisplay(void* arg){
-	 const char *shm_name = "/shm_aircraft_data";
-	 		    const int SIZE = sizeof(SharedMemory);
-
-	 		    // Open shared memory
-	 		    int shm_fd = shm_open(shm_name, O_RDWR, 0666);
-	 		    SharedMemory *shared = static_cast<SharedMemory*>(mmap(0, SIZE, PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0));
 
 	 ((Display*) arg)->runDisplay();
 	 	return NULL;

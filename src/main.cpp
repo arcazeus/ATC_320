@@ -27,6 +27,11 @@
 #define MAX_AIRCRAFTS 120
 
 int main() {
+
+	char buf[256];
+	if (getcwd(buf, sizeof(buf)) != NULL) {
+	    std::cout << "Current working directory: " << buf << std::endl;
+	}
 	// thread IDs
 	pthread_t ComSys_tid,Operator_tid, Radar_tid, Display_tid, Comms_tid, Aircraft_tid[MAX_AIRCRAFTS];
 
@@ -37,9 +42,31 @@ int main() {
 	Operator OperatorObj;
 	std::vector<Aircraft> aircrafts;
 
-	// Example: populate aircrafts vector with some Aircraft objects
-	// In a real scenario, you might read this data from a file or another source
-	int numberOfAircrafts = 5; // For example, create 5 aircraft
+	/*std::ifstream file(".txt");
+
+			if (!file.is_open()) {
+				std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
+			}
+
+			std::string line;
+			while (std::getline(file, line)) {
+				std::istringstream iss(line);
+				float time;
+				int ID;
+				double x, y, z, xSpeed, ySpeed, zSpeed;
+
+				if (!(iss >> time >> ID >> x >> y >> z >> xSpeed >> ySpeed >> zSpeed)) {
+					std::cerr << "Error reading line: " << line << std::endl;
+					continue; // Skip lines that do not match the expected format
+				} else {
+					//cout << "Creating aircraft with ID: " << ID << endl;
+				}
+
+				Aircraft aircraft = Aircraft(time, ID, x, y, z, xSpeed, ySpeed, zSpeed);
+				aircrafts.push_back(aircraft);
+			}
+*/
+	int numberOfAircrafts = 2; // For example, create 5 aircraft
 	for (int i = 0; i < numberOfAircrafts; ++i) {
 		// Create an Aircraft object with some initial parameters
 		// Adjust the parameters as needed
@@ -48,7 +75,7 @@ int main() {
 	}
 
 	// Set the aircraft list in the ComSys
-	ComSysObj.setAircraftList(aircrafts);
+	//ComSysObj.setAircraftList(aircrafts);
 
 	// Set the aircraft IDs in the Radar (if needed)
 	std::vector<int> aircraftIDs;
@@ -64,7 +91,7 @@ int main() {
 			perror("Failed to create airplane thread");
 			return 1;
 		}
-		RadarObj.addAircraft();
+		//RadarObj.addAircraft();
 	}
 
 	// Creating Comsys thread
