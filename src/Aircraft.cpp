@@ -72,6 +72,7 @@ void Aircraft::runAircraft() {
 }
 
 void Aircraft::updatePosition() {
+	std::lock_guard<std::mutex> lock(coutMutex);
 
 	// Update position based on speed
 		this->xpost += this->xspeed;

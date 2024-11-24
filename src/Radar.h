@@ -21,7 +21,7 @@ public:
 	void checkForMessages(name_attach_t *attach);
 	void handleMessage(int rcvid, const char *msg);
 	void runRadar();
-	void addAircraft(Aircraft);
+	void addAircraft(const Aircraft& plane);
 	void scanForAircraft();
 	void storeAirSpaceHistory();
 	void updateAircraftData(int aircraftID, const std::string &data);

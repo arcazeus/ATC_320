@@ -8,6 +8,7 @@
 
 using namespace std;
 
+#pragma pack(push, 1)
 class Aircraft {
 public:
     // Constructor matching the parameters in main.cpp
@@ -54,6 +55,6 @@ private:
     double zpost;
 
 };
-
+#pragma pack(pop)
 #endif
 

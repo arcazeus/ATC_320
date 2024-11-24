@@ -29,8 +29,8 @@ public:
 	void handleMessage(int rcvid, const char *msg);
 	void checkViolations();
 	void operatorAlert(int id_1, int id_2);
-	void sendDataDisplay(int id);
 	void sendDataDisplayAllAircraft();
+//	void sendDataDisplayAllAircraft();
 	void setAircraftList();
 
 private:

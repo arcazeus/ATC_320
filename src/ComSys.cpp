@@ -12,6 +12,7 @@
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
 #include <cmath>
+#include <errno.h>
 #include "globals.h"
 #include "ComSys.h"
 #include "cTimer.h"
@@ -52,21 +53,20 @@ void* ComSys::startComSys(void *arg) {
 void ComSys::runComSys() {
 	std::cout << "ComSys running..." << std::endl;
 
-	std::string ComSysName = "ComSys_" + std::to_string(2);
-
-	name_attach_t *attach = name_attach(NULL, ComSysName.c_str(), 0);
-	if (attach == NULL) {
-		std::cerr << "Error: Failed to register ComSys " << 2
-				<< " with name service!" << std::endl;
-		return;
-	}
-
-	std::cout << "ComSys " << 1 << " registered as '" << 2 << "'." << std::endl;
+//	std::string ComSysName = "ComSys_" + std::to_string(2);
+//
+//	name_attach_t *attach = name_attach(NULL, ComSysName.c_str(), 0);
+//	if (attach == NULL) {
+//		std::cerr << "Error: Failed to register ComSys " << 2
+//				<< " with name service!" << std::endl;
+//		return;
+//	}
+//
+//	std::cout << "ComSys " << 1 << " registered as '" << 2 << "'." << std::endl;
 
 	cTimer time = cTimer(1, 0);
 	time.startTimer();
 	while (true) {
-
 		time.tick();
 		/*char msg[256];        // Buffer for received messages
 		 int rcvid;            // Receive ID
@@ -81,15 +81,7 @@ void ComSys::runComSys() {
 		checkViolations();
 		// Send data to Display
 		sendDataDisplayAllAircraft();
-
-		time.waitTimer();
 		time.tock();
-	}
-}
-
-void ComSys::sendDataDisplayAllAircraft() {
-	for (int i = 0; i < TotalNumAircraft; i++) {
-		sendDataDisplay(i);
 	}
 }
 
@@ -136,13 +128,17 @@ void ComSys::setAircraftList() {
 	}
 	const char *request = "ComSysRequest";
 	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
-	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
+
+	if (MsgSend(coid, request, strlen(request) + 1, PLANES.data(),
 			PLANES.size() * sizeof(Aircraft)) == -1) {
 		std::cerr << "Failed to receive data from Radar " << 1 << ": "
 				<< strerror(errno) << std::endl;
 	} else {
 		// Add the new Aircraft to the vector
+		std::lock_guard<std::mutex> lock(coutMutex);
 		aircraft = PLANES;
+		TotalNumAircraft = aircraft.size();
+		std::cout << "ComSys received " << TotalNumAircraft << " aircraft from Radar." << std::endl;
 	}
 
 	name_close(coid);
@@ -165,35 +161,35 @@ void ComSys::checkViolations() {
 			double deltaZ = aircraft[i].getPositionZ()
 					- aircraft[j].getPositionZ();
 
-			// Future positions after n seconds
-			double futureDeltaX =
-					(aircraft[i].getPositionX() + aircraft[i].getSpeedX() * n)
-							- (aircraft[j].getPositionX()
-									+ aircraft[j].getSpeedX() * n);
-			double futureDeltaY =
-					(aircraft[i].getPositionY() + aircraft[i].getSpeedY() * n)
-							- (aircraft[j].getPositionY()
-									+ aircraft[j].getSpeedY() * n);
-			double futureDeltaZ =
-					(aircraft[i].getPositionZ() + aircraft[i].getSpeedZ() * n)
-							- (aircraft[j].getPositionZ()
-									+ aircraft[j].getSpeedZ() * n);
+				// Future positions after n seconds
+				double futureDeltaX =
+						(aircraft[i].getPositionX() + aircraft[i].getSpeedX() * n)
+								- (aircraft[j].getPositionX()
+										+ aircraft[j].getSpeedX() * n);
+				double futureDeltaY =
+						(aircraft[i].getPositionY() + aircraft[i].getSpeedY() * n)
+								- (aircraft[j].getPositionY()
+										+ aircraft[j].getSpeedY() * n);
+				double futureDeltaZ =
+						(aircraft[i].getPositionZ() + aircraft[i].getSpeedZ() * n)
+								- (aircraft[j].getPositionZ()
+										+ aircraft[j].getSpeedZ() * n);
 
-			// Check current violation
-			if (std::abs(deltaX) <= 3000 || std::abs(deltaY) <= 3000
-					|| std::abs(deltaZ) <= 1000) {
-				operatorAlert(aircraft[i].getId(), aircraft[j].getId());
-			}
+				// Check current violation
+				if (std::abs(deltaX) <= 3000 || std::abs(deltaY) <= 3000
+						|| std::abs(deltaZ) <= 1000) {
+					operatorAlert(aircraft[i].getId(), aircraft[j].getId());
+				}
 
-			// Check future violation
-			if (std::abs(futureDeltaX) <= 3000 || std::abs(futureDeltaY) <= 3000
-					|| std::abs(futureDeltaZ) <= 1000) {
-				operatorAlert(aircraft[i].getId(), aircraft[j].getId());
+				// Check future violation
+				if (std::abs(futureDeltaX) <= 3000 || std::abs(futureDeltaY) <= 3000
+						|| std::abs(futureDeltaZ) <= 1000) {
+					operatorAlert(aircraft[i].getId(), aircraft[j].getId());
+				}
 			}
 		}
 	}
 
-}
 
 void ComSys::operatorAlert(int id_1, int id_2) {
 
@@ -208,8 +204,6 @@ void ComSys::operatorAlert(int id_1, int id_2) {
 			std::cerr << "Failed to connect to Display: " << strerror(errno)
 					<< std::endl;
 		}
-		return;
-	}
 
 	// Send the alert message
 	if (MsgSend(coid, alertMessage.c_str(), alertMessage.size() + 1, NULL, 0)
@@ -219,22 +213,26 @@ void ComSys::operatorAlert(int id_1, int id_2) {
 			std::cerr << "Failed to send alert to Display: " << strerror(errno)
 					<< std::endl;
 		}
-	}
 
-	// Close the connection
-	name_close(coid);
+		// Close the connection
+		name_close(coid);
+		}
+	}
 }
 
-void ComSys::sendDataDisplay(int id) {
+void ComSys::sendDataDisplayAllAircraft() {
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "sending data to Display" << std::endl;
 	}
 	// Prepare the data
 	std::stringstream data;
-	data << aircraft[id].getId() << " " << aircraft[id].getPositionX() << " "
-			<< aircraft[id].getPositionY() << " "
-			<< aircraft[id].getPositionZ();
+	for (const auto &plane : aircraft) {
+		data << plane.getId() << " "
+			 << plane.getPositionX() << " "
+			 << plane.getPositionY() << " "
+			 << plane.getPositionZ() << "\n";
+	}
 
 	// Connect to the Display
 	int coid = name_open("displayServer", 0);
@@ -245,12 +243,12 @@ void ComSys::sendDataDisplay(int id) {
 	}
 
 	// Send the data
-	if (MsgSend(coid, data.str().c_str(), data.str().size() + 1, NULL, 0)
+	std::string allData = data.str();
+	if (MsgSend(coid, allData.c_str(), allData.size() + 1, NULL, 0)
 			== -1) {
 		std::cerr << "Failed to send data to Display: " << strerror(errno)
 				<< std::endl;
 	}
-
 	// Close the connection
 	name_close(coid);
 
