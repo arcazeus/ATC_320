@@ -73,7 +73,7 @@ void Aircraft::runAircraft() {
 
 void Aircraft::updatePosition() {
 
-	/*	// Update position based on speed
+	// Update position based on speed
 		this->xpost += this->xspeed;
 		this->ypost += this->yspeed;
 		this->zpost += this->zspeed;
@@ -83,7 +83,7 @@ void Aircraft::updatePosition() {
 		std::cout << "Aircraft " << this->id << " at time " << this->time
 				<< " position updated to (" << this->xpost << ", "
 				<< this->ypost << ", " << this->zpost << ")." << std::endl;
-	*/
+
 }
 
 void Aircraft::checkForMessages(name_attach_t *attach) {

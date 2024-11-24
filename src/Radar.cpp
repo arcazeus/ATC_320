@@ -84,9 +84,14 @@ void Radar::runRadar() {
 }
 
 void Radar::addAircraft(Aircraft plane) {
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 
 	planes.push_back(plane);
-
+	for(Aircraft i : planes){
+		std::cout<<i.getId()<<" "<<i.getSpeedX()<<std::endl;
+	}
+	}
 }
 
 void Radar::scanForAircraft() {
@@ -132,7 +137,7 @@ void Radar::setAircraftIDs(const std::vector<int> &aircraftIDs) {
 }
 
 void Radar::storeAirSpaceHistory() {
-	cTimer log = cTimer(30,0);
+
 	std::ofstream outfile;
 	// Open the file in append mode
 	outfile.open(History, std::ios_base::app);
