@@ -89,7 +89,7 @@ void Radar::addAircraft(Aircraft plane) {
 
 	planes.push_back(plane);
 	for(Aircraft i : planes){
-		std::cout<<i.getId()<<" "<<i.getSpeedX()<<std::endl;
+		std::cout<<i.getId()<<" "<<i.getPositionX()<<std::endl;
 	}
 	}
 }

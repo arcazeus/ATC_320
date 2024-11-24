@@ -23,6 +23,7 @@
 #include "Comms.h"
 #include "Operator.h"
 #include "Display.h"
+#include <random>
 
 #define MAX_AIRCRAFTS 120
 
@@ -42,8 +43,21 @@ int main() {
 	Comms CommsObj;
 	Operator OperatorObj;
 	std::vector<Aircraft> aircrafts;
+	/* std::ofstream outfile("aircrafts.txt"); // Open a file named "output.txt" for writing
 
-	/*std::ifstream file(".txt");
+	       if (!outfile) {
+	           std::cerr << "Error: Could not open file for writing!" << std::endl;
+	           return 1;
+	       }
+
+	       // Output rows with the desired format
+	       outfile << "1 673 621 881 4562 1144 0" << std::endl;
+	       outfile << "2 592 917 719 8210 12992 2" << std::endl;
+	       outfile << "3 971 881 622 812 13986 3" << std::endl;
+
+
+	       outfile.close();
+	std::ifstream file("aircrafts.txt");
 
 	 if (!file.is_open()) {
 	 std::cerr << "Error opening file: " << "ENROUTE" << std::endl;
@@ -65,16 +79,31 @@ int main() {
 
 	 Aircraft aircraft = Aircraft(time, ID, x, y, z, xSpeed, ySpeed, zSpeed);
 	 aircrafts.push_back(aircraft);
-	 }
-	 */
-	int numberOfAircrafts = 10; // For example, create 5 aircraft
-	for (int i = 0; i < numberOfAircrafts; ++i) {
-		// Create an Aircraft object with some initial parameters
-		// Adjust the parameters as needed
-		Aircraft aircraft(i, 10000, 10000,10000+i*200, 1000.0, 500.0, 500.0,
-				0.0f); // time is 0.0f
-		aircrafts.push_back(aircraft);
-	}
+	 }*/
+
+	int numberOfAircrafts= 10;
+
+    // Random number generator setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> xDist(1, 100000); // X-position range
+    std::uniform_int_distribution<> yDist(1, 100000); // Y-position range
+    std::uniform_int_distribution<> zDist(1, 25000);  // Z-position range
+    std::uniform_int_distribution<> speedDist(0, 1);  // Choose between 500 and 1000
+
+    for (int i = 0; i < numberOfAircrafts; ++i) {
+        int xPos = xDist(gen);
+        int yPos = yDist(gen);
+        int zPos = zDist(gen);
+        double speedOptions[] = {500.0, 1000.0};
+        double xSpeed = speedOptions[speedDist(gen)];
+        double ySpeed = speedOptions[speedDist(gen)];
+        double zSpeed = speedOptions[speedDist(gen)];
+        float time = 0.0f;
+
+        Aircraft aircraft(i, xPos, yPos, zPos, xSpeed, ySpeed, zSpeed, time);
+        aircrafts.push_back(aircraft);
+    }
 
 	// Set the aircraft list in the ComSys
 	//ComSysObj.setAircraftList(aircrafts);
