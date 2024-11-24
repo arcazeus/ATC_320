@@ -25,22 +25,12 @@
 #include <chrono>
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
+#include "cTimer.h"
+#include "globals.h"
 
 // Constructor
 Display::Display() {
-	std::cout << "Display initialized." << std::endl;
 
-	attach = name_attach(NULL, "DisplayServer", 0);
-		if (attach == NULL) {
-			std::cerr
-					<< "Error: Failed to register Display with name service in constructor!"
-					<< std::endl;
-			// Handle error appropriately (e.g., throw exception or set a flag)
-		} else {
-			std::cout
-					<< "Display registered with name service in constructor."
-					<< std::endl;
-		}
 }
 
 // Destructor
@@ -48,58 +38,92 @@ Display::~Display() {
 	std::cout << "Display shutting down." << std::endl;
 }
 
+void* Display::startDisplay(void *arg) {
 
-
-// Method to show an alarm on the display
-void Display::showAlarm(const std::string &alarmMessage) {
-	std::cout << "ALARM: " << alarmMessage << std::endl;
-}
-
-
-// Method to update the display every 5 seconds
-void Display::updateDisplay() {
-    while (true) {
-
-
-		// Simulate updating the display
-		std::cout << "Display updated with the latest information..." << std::endl;
-
-		// You can add more logic here to update the actual display with new data
-    }
-}
-
-
- void* Display::startDisplay(void* arg){
-
-	 ((Display*) arg)->runDisplay();
-	 	return NULL;
+	((Display*) arg)->runDisplay();
+	return NULL;
 
 }
 
 void Display::runDisplay() {
-    name_attach_t* attach = name_attach(NULL, "displayServer", 0);
-    if (attach == NULL) {
-        std::cerr << "Error: Failed to register Display with name service!" << std::endl;
-        return;
-    }
+	name_attach_t *attach = name_attach(NULL, "displayServer", 0);
+	if (attach == NULL) {
+		std::cerr << "Error: Failed to register Display with name service!"
+				<< std::endl;
+		return;
+	}
+	cTimer time = cTimer(5, 0);
+	while (true) {
+		/*	char msg[256];
+		 int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+		 if (rcvid != -1) {
+		 // Parse and display the data
+		 std::string data(msg);
+		 std::cout << "Display Update: " << data << std::endl;
 
-    while (true) {
-        char msg[256];
-        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-        if (rcvid != -1) {
-            // Parse and display the data
-            std::string data(msg);
-            std::cout << "Display Update: " << data << std::endl;
+		 // Send acknowledgment
+		 MsgReply(rcvid, 0, NULL, 0);
+		 }*/
 
-            // Send acknowledgment
-            MsgReply(rcvid, 0, NULL, 0);
-        }
+		time.startTimer();
+		time.tick();
 
-        // Sleep or perform other tasks
-        sleep(1);
-    }
+		updateDisplay();
 
-    name_detach(attach, 0);
+		time.waitTimer();
+		time.tock();
+	}
+
+	name_detach(attach, 0);
+
 }
 
+void Display::updateDisplay() {
+	{
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "Display..." << std::endl;
+	}
+	string RadarName = "Radar_1";
+	int coid = name_open("Radar_1", 0);
+	if (coid == -1) {
+		std::cerr << "Failed to connect to Radar " << 1 << ": "
+				<< strerror(errno) << std::endl;
+		return;
+	}
+	const char *request = "DisplayRequest";
+	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
+	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
+			PLANES.size() * sizeof(Aircraft)) == -1) {
+		std::cerr << "Failed to receive data from Radar " << 1 << ": "
+				<< strerror(errno) << std::endl;
+	} else {
+std::cout<<"DISPLAY SMT"<<std::endl;
+	/*	// Add the new Aircraft to the vector
+		for (long unsigned int i = 0; i < PLANES.size(); i++) {
+			int gridX = PLANES[i].getPositionX() / 1000;
+			int gridZ = PLANES[i].getPositionZ() / 1000;
+
+			if (gridX >= 0 && gridX < scaledX && gridZ >= 0
+					&& gridZ < scaledZ) {
+
+				grid[gridZ][gridX] = '*';
+			}
+		}
+
+		for (int i = scaledZ - 1; i >= 0; i--) {
+			std::cout << "|";
+			buffer += "|";
+			for (int j = 0; j < scaledX; j++) {
+				std::cout << grid[i][j];
+				buffer += grid[i][j];
+			}
+			buffer += "|\n";
+			std::cout << "|" << std::endl;
+
+		}*/
+	}
+
+	name_close(coid);
+
+}
 

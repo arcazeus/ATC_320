@@ -72,19 +72,19 @@ void Aircraft::runAircraft() {
 }
 
 void Aircraft::updatePosition() {
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	// Update position based on speed
 	this->xpost += this->xspeed;
 	this->ypost += this->yspeed;
 	this->zpost += this->zspeed;
 
 	this->time += 1.0f;
-	{
-		std::lock_guard<std::mutex> lock(coutMutex);
+
+
 		std::cout << "Aircraft " << this->id << " at time " << this->time
-		 << " position updated to ("
-		 << this->xpost << ", "
-		 << this->ypost << ", "
-		 << this->zpost << ")." << std::endl;
+				<< " position updated to (" << this->xpost << ", "
+				<< this->ypost << ", " << this->zpost << ")." << std::endl;
 	}
 }
 
@@ -110,9 +110,10 @@ void Aircraft::handleMessage(int rcvid, const char *msg) {
 				<< this->xspeed << " SpeedY:" << this->yspeed << " SpeedZ:"
 				<< this->zspeed;
 
-	Aircraft data= Aircraft(id,xpost,ypost,zpost,xspeed,yspeed,zspeed,time);
+		Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed,
+				zspeed, time);
 
-		MsgReply(rcvid,0, &data, sizeof(data));
+		MsgReply(rcvid, 0, &data, sizeof(data));
 	} else if (receivedMessage.find("Command:") == 0) {
 		// Execute command
 		std::string command = receivedMessage.substr(8);
@@ -126,91 +127,91 @@ void Aircraft::handleMessage(int rcvid, const char *msg) {
 }
 
 void Aircraft::executeCommand(const std::string &command) {
-if (command.find("ChangeSpeedX:") == 0) {
-	double newSpeedX = std::stod(command.substr(13));
-	this->xspeed = newSpeedX;
-	std::cout << "Aircraft " << this->id << " changed SpeedX to "
-	<< newSpeedX << std::endl;
-} else if (command.find("ChangeSpeedY:") == 0) {
-	double newSpeedY = std::stod(command.substr(13));
-	this->yspeed = newSpeedY;
-	std::cout << "Aircraft " << this->id << " changed SpeedY to "
-	<< newSpeedY << std::endl;
-} else if (command.find("ChangeSpeedZ:") == 0) {
-	double newSpeedZ = std::stod(command.substr(13));
-	this->zspeed = newSpeedZ;
-	std::cout << "Aircraft " << this->id << " changed SpeedZ to "
-	<< newSpeedZ << std::endl;
-} else if (command.find("ChangeAltitude:") == 0) {
-	double newAltitude = std::stod(command.substr(15));
-	this->zpost = newAltitude;
-	std::cout << "Aircraft " << this->id << " changed Altitude to "
-	<< newAltitude << std::endl;
-} else {
-	std::cout << "Aircraft " << this->id << " received unknown command: "
-	<< command << std::endl;
-}
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+	if (command.find("ChangeSpeedX:") == 0) {
+		double newSpeedX = std::stod(command.substr(13));
+		this->xspeed = newSpeedX;
+		std::cout << "Aircraft " << this->id << " changed SpeedX to "
+				<< newSpeedX << std::endl;
+	} else if (command.find("ChangeSpeedY:") == 0) {
+		double newSpeedY = std::stod(command.substr(13));
+		this->yspeed = newSpeedY;
+		std::cout << "Aircraft " << this->id << " changed SpeedY to "
+				<< newSpeedY << std::endl;
+	} else if (command.find("ChangeSpeedZ:") == 0) {
+		double newSpeedZ = std::stod(command.substr(13));
+		this->zspeed = newSpeedZ;
+		std::cout << "Aircraft " << this->id << " changed SpeedZ to "
+				<< newSpeedZ << std::endl;
+	} else {
+		std::cout << "Aircraft " << this->id << " received unknown command: "
+				<< command << std::endl;
+	}
+
+	}
 
 }
 
 // Getters
 float Aircraft::getTime() const {
-return time;
+	return time;
 }
 int Aircraft::getId() const {
-return id;
+	return id;
 }
 double Aircraft::getSpeedX() const {
-return xspeed;
+	return xspeed;
 }
 double Aircraft::getSpeedY() const {
-return yspeed;
+	return yspeed;
 }
 double Aircraft::getSpeedZ() const {
-return zspeed;
+	return zspeed;
 }
 double Aircraft::getPositionX() const {
-return xpost;
+	return xpost;
 }
 double Aircraft::getPositionY() const {
-return ypost;
+	return ypost;
 }
 double Aircraft::getPositionZ() const {
-return zpost;
+	return zpost;
 }
 
 // Setters
 void Aircraft::setTime(float t) {
-time = t;
+	time = t;
 }
 void Aircraft::setId(int i) {
-id = i;
+	id = i;
 }
 void Aircraft::setXspeed(double xs) {
-xspeed = xs;
+	xspeed = xs;
 }
 void Aircraft::setYspeed(double ys) {
-yspeed = ys;
+	yspeed = ys;
 }
 void Aircraft::setZspeed(double zs) {
-zspeed = zs;
+	zspeed = zs;
 }
 void Aircraft::setXpost(double xp) {
-xpost = xp;
+	xpost = xp;
 }
 void Aircraft::setYpost(double yp) {
-ypost = yp;
+	ypost = yp;
 }
 void Aircraft::setZpost(double zp) {
-zpost = zp;
+	zpost = zp;
 }
 
 void display(const Aircraft &aircraft) {
-std::cout << "Aircraft ID: " << aircraft.getId() << "\n" << "Time: "
-<< aircraft.getTime() << "\n" << "X Speed: " << aircraft.getSpeedX()
-<< "\n" << "Y Speed: " << aircraft.getSpeedY() << "\n"
-<< "Z Speed: " << aircraft.getSpeedZ() << "\n" << "X Position: "
-<< aircraft.getPositionX() << "\n" << "Y Position: "
-<< aircraft.getPositionY() << "\n" << "Z Position: "
-<< aircraft.getPositionZ() << "\n";
+std::cout  << "Aircraft ID: " << aircraft.getId() << "\n" << "Time: "
+
+			<< aircraft.getTime() << "\n" << "X Speed: " << aircraft.getSpeedX()
+			<< "\n" << "Y Speed: " << aircraft.getSpeedY() << "\n"
+			<< "Z Speed: " << aircraft.getSpeedZ() << "\n" << "X Position: "
+			<< aircraft.getPositionX() << "\n" << "Y Position: "
+			<< aircraft.getPositionY() << "\n" << "Z Position: "
+			<< aircraft.getPositionZ() << "\n";
 }

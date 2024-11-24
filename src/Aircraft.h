@@ -18,7 +18,7 @@ public:
     void updatePosition();
     void executeCommand(const std::string& command);
     void checkForMessages(name_attach_t* attach);
-    void handleMessage(int rcvid, const char* msg);
+	void handleMessage(int rcvid, const char *msg);
 
     // Getters
     float getTime() const;

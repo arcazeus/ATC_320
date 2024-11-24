@@ -69,13 +69,13 @@ void ComSys::runComSys() {
 
 		time.tick();
 		/*char msg[256];        // Buffer for received messages
-		int rcvid;            // Receive ID
+		 int rcvid;            // Receive ID
 
-		// Wait for a message from the Operator
-		rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-		if (rcvid != -1) {
-			handleMessage(rcvid, msg);
-		}*/
+		 // Wait for a message from the Operator
+		 rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+		 if (rcvid != -1) {
+		 handleMessage(rcvid, msg);
+		 }*/
 		setAircraftList();
 		// Check for violations
 		checkViolations();
@@ -136,8 +136,8 @@ void ComSys::setAircraftList() {
 	}
 	const char *request = "ComSysRequest";
 	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
-	if (MsgSend(coid, request, strlen(request) + 1, &PLANES, PLANES.size()*sizeof(Aircraft))
-			== -1) {
+	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
+			PLANES.size() * sizeof(Aircraft)) == -1) {
 		std::cerr << "Failed to receive data from Radar " << 1 << ": "
 				<< strerror(errno) << std::endl;
 	} else {
@@ -146,13 +146,15 @@ void ComSys::setAircraftList() {
 	}
 
 	name_close(coid);
+
 }
 
 //minimum Z=1000, X=3000, Y=3000
 void ComSys::checkViolations() {
-
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Checking for Violations" << std::endl;
-
+	}
 	for (int i = 0; i < TotalNumAircraft - 1; i++) {
 		for (int j = i + 1; j < TotalNumAircraft; j++) {
 			// Current positions
@@ -194,15 +196,16 @@ void ComSys::checkViolations() {
 }
 
 void ComSys::operatorAlert(int id_1, int id_2) {
+
 	std::string alertMessage = "Violation detected between aircraft "
 			+ std::to_string(id_1) + " and aircraft " + std::to_string(id_2);
 
 	// Connect to the Operator
-	int coid = name_open("operatorServer", 0);
+	int coid = name_open("displayServer", 0);
 	if (coid == -1) {
 		{
 			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cerr << "Failed to connect to Operator: " << strerror(errno)
+			std::cerr << "Failed to connect to Display: " << strerror(errno)
 					<< std::endl;
 		}
 		return;
@@ -213,7 +216,7 @@ void ComSys::operatorAlert(int id_1, int id_2) {
 			== -1) {
 		{
 			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cerr << "Failed to send alert to Operator: " << strerror(errno)
+			std::cerr << "Failed to send alert to Display: " << strerror(errno)
 					<< std::endl;
 		}
 	}
@@ -223,6 +226,10 @@ void ComSys::operatorAlert(int id_1, int id_2) {
 }
 
 void ComSys::sendDataDisplay(int id) {
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+	std::cout<<"sending data to Display"<<std::endl;
+	}
 	// Prepare the data
 	std::stringstream data;
 	data << aircraft[id].getId() << " " << aircraft[id].getPositionX() << " "
@@ -246,5 +253,6 @@ void ComSys::sendDataDisplay(int id) {
 
 	// Close the connection
 	name_close(coid);
+
 }
 

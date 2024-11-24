@@ -11,17 +11,22 @@ public:
 	Display();
 	~Display();
 
-
-
-    // Public methods
-    void showAlarm(const std::string& alarmMessage);  // Show an alarm on the display
-    void updateDisplay();
-    static void* startDisplay(void*);
-    void runDisplay();
+	// Public methods
+	void updateDisplay();
+	static void* startDisplay(void*);
+	void runDisplay();
 
 private:
-    name_attach_t *attach;
+	name_attach_t *attach;
+	//Actual Display Grid
+		const int Z = 25000;
+		const int X = 100000;
+		//Scaled Display
+		const int scaledZ= Z/1000;
+		const int scaledX = X/1000;
 
+		std::string* grid;
+		std::string buffer;
 };
 
 #endif // DISPLAY_H

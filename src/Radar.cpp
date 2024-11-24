@@ -35,10 +35,13 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Received ComSysRequest. Sending aircraft data..."
 				<< std::endl;
-		MsgReply(rcvid, 0, planes.data(), planes.size()*sizeof(Aircraft));
+		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 
-	} else {
-		std::cout << "HOOOGA BOOGA" << std::endl;
+	} else if(receivedMessage == "DisplayRequest") {
+		std::lock_guard<std::mutex> lock(coutMutex);
+				std::cout << "Received ComSysRequest. Sending aircraft data..."
+						<< std::endl;
+				MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 	}
 }
 
@@ -104,8 +107,11 @@ void Radar::scanForAircraft() {
 			std::cerr << "Failed to receive data from Aircraft " << aircraftID
 					<< ": " << strerror(errno) << std::endl;
 		} else {
+
+
 			// Add the new Aircraft to the vector
 			addAircraft(receivedAircraft);
+
 		}
 
 		name_close(coid);

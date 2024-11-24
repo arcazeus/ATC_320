@@ -23,18 +23,13 @@ public:
 	Comms();
 	static void* startComms(void *arg);
 	void runComms();
-	void sendCommand(int aircraftID, const std::string& command);
-
-//receive response from an aircraft
-	void receiveResponse(const string &aircraftID);
-	void logCommand(const Comms &command); // just logging details of command
-	void logResponse(const string &aircraftID, const string &response);
-
-	bool isAricraftAvailable(const string &aircraftID);
+	void sendCommand();
+	void checkForMessage(name_attach_t *attach);
+	void handleMessage(int rcvid, const char *msg);
 
 private:
-
-
+	int aircraftID;
+	std::string command;
 
 };
 
