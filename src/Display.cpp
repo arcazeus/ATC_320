@@ -83,7 +83,6 @@ void Display::updateDisplay() {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Display Updating" << std::endl;
 	}
-	string ComSysName = "ComSys_1";
 	int coid = name_open("Radar_1", 0);
 	if (coid == -1) {
 		std::cerr << "Failed to connect to ComSys_ " << 1 << ": "

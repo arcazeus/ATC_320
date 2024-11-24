@@ -34,7 +34,8 @@ public:
 
 private:
 	Logger OperatorLog;
-	const char*  commands="Operatorcommands";
+//	const char*  commands="Operatorcommands";
+	std::ofstream logFile;
 };
 
 #endif

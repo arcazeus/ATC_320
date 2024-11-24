@@ -1,5 +1,4 @@
 #include "Radar.h"
-
 #include <sys/dispatch.h>
 #include <sys/neutrino.h>
 #include <unistd.h>
@@ -83,14 +82,27 @@ void Radar::runRadar() {
 	}
 }
 
-void Radar::addAircraft(Aircraft plane) {
-	{
+void Radar::addAircraft(const Aircraft& plane) {
+
 	std::lock_guard<std::mutex> lock(coutMutex);
 
-	planes.push_back(plane);
-	for(Aircraft i : planes){
-		std::cout<<i.getId()<<" "<<i.getSpeedX()<<std::endl;
+	// Find if the Aircraft already exists in the planes vector
+	auto it = std::find_if(planes.begin(), planes.end(),
+						   [&](const Aircraft& a) { return a.getId() == plane.getId(); });
+
+	if (it != planes.end()) {
+		// Update existing Aircraft data
+		*it = plane;
+		 std::cout << "Updated Aircraft ID: " << plane.getId()
+				  << " SpeedX: " << plane.getSpeedX()
+				  << " PositionX: " << plane.getPositionX() << std::endl;
 	}
+	else {
+		// Add new Aircraft to the vector
+		planes.push_back(plane);
+		std::cout << "Added Aircraft ID: " << plane.getId()
+				  << " SpeedX: " << plane.getSpeedX()
+				  << " PositionX: " << plane.getPositionX() << std::endl;
 	}
 }
 
@@ -100,6 +112,7 @@ void Radar::scanForAircraft() {
 
 		std::cout << "Scanning..." << std::endl;
 	}
+//	planes.clear();
 	for (int aircraftID : aircraftIDs) {
 		std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);
 		int coid = name_open(aircraftName.c_str(), 0);
@@ -119,6 +132,16 @@ void Radar::scanForAircraft() {
 
 			// Add the new Aircraft to the vector
 			addAircraft(receivedAircraft);
+
+			// Update aircraftDataMap with the latest data
+			std::stringstream ss;
+			ss << "X=" << receivedAircraft.getPositionX()
+			   << " Y=" << receivedAircraft.getPositionY()
+			   << " Z=" << receivedAircraft.getPositionZ()
+			   << " SpeedX=" << receivedAircraft.getSpeedX()
+			   << " SpeedY=" << receivedAircraft.getSpeedY()
+			   << " SpeedZ=" << receivedAircraft.getSpeedZ();
+			updateAircraftData(receivedAircraft.getId(), ss.str());
 
 		}
 
@@ -146,8 +169,14 @@ void Radar::storeAirSpaceHistory() {
 	if (outfile.is_open()) {
 		// Write content to the file
 		outfile << "Airspace snapshot:\n";
-		for (const auto &entry : aircraftDataMap) {
-			outfile << "Aircraft " << entry.first << ": " << entry.second
+		for (const Aircraft &plane : planes) {
+			outfile << "Aircraft " << plane.getId() << ": "
+					<< "X=" << plane.getPositionX()
+					<< " Y=" << plane.getPositionY()
+					<< " Z=" << plane.getPositionZ()
+					<< " SpeedX=" << plane.getSpeedX()
+					<< " SpeedY=" << plane.getSpeedY()
+					<< " SpeedZ=" << plane.getSpeedZ()
 					<< "\n";
 		}
 		outfile << "---------------------------\n";
