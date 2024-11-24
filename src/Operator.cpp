@@ -83,44 +83,44 @@ void Operator::sendCommandToAircraft(int aircraftID,
 		const std::string &command) {
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout<<"sending command"<<std::endl;
+		std::cout << "sending command" << std::endl;
 	}
-		// Format the command to include aircraft ID and the actual command
-		std::string formattedCommand = "Aircraft " + std::to_string(aircraftID)
-				+ " - Command: " + command;
+	// Format the command to include aircraft ID and the actual command
+	std::string formattedCommand = "Aircraft " + std::to_string(aircraftID)
+			+ " - Command: " + command;
 
-		std::cout << "Sending command to aircraft " << aircraftID << ": "
-				<< command << std::endl;
+	std::cout << "Sending command to aircraft " << aircraftID << ": " << command
+			<< std::endl;
 
-		// Log the command
-		logCommand(formattedCommand);
+	// Log the command
+	logCommand(formattedCommand);
 
-		// Example communication with the Computer System (acting as a communication hub)
-		if (connectionId == -1) {
-			std::cerr << "Error: No valid connection to the Computer System!"
-					<< std::endl;
-			return;
-		}
+	// Example communication with the Computer System (acting as a communication hub)
+	if (connectionId == -1) {
+		std::cerr << "Error: No valid connection to the Computer System!"
+				<< std::endl;
+		return;
+	}
 
-		// Send the command to the Computer System, which will forward it to the Aircraft
-		char response[256];
-		int status = MsgSend(connectionId, formattedCommand.c_str(),
-				formattedCommand.size() + 1, response, sizeof(response));
+	// Send the command to the Computer System, which will forward it to the Aircraft
+	char response[256];
+	int status = MsgSend(connectionId, formattedCommand.c_str(),
+			formattedCommand.size() + 1, response, sizeof(response));
 
-		if (status == -1) {
-			std::cerr << "Failed to send command to the Computer System!"
-					<< std::endl;
-		} else {
-			std::cout << "Received response from Computer System: " << response
-					<< std::endl;
-		}
+	if (status == -1) {
+		std::cerr << "Failed to send command to the Computer System!"
+				<< std::endl;
+	} else {
+		std::cout << "Received response from Computer System: " << response
+				<< std::endl;
+	}
 
 }
 
 void Operator::changeParameterN(int newN) {
 	{
-	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout<<"changing parameter to "<<newN<<std::endl;
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "changing parameter to " << newN << std::endl;
 	}
 	int coid = name_open("computerSystemServer", 0);
 	if (coid == -1) {
@@ -128,7 +128,6 @@ void Operator::changeParameterN(int newN) {
 				<< std::endl;
 		return;
 	}
-
 
 	std::string command = "ChangeN" + std::to_string(newN);
 
@@ -191,34 +190,34 @@ void Operator::logCommand(const std::string &command) {
 }
 
 /*
-void Operator::checkViolationFromCS() {
-	// Buffer to store the message received from the Computer System
-	char message[256];
-	int csId = getConnectionId(); // Get the connection ID for the Computer System
+ void Operator::checkViolationFromCS() {
+ // Buffer to store the message received from the Computer System
+ char message[256];
+ int csId = getConnectionId(); // Get the connection ID for the Computer System
 
-	// Receive the message from the Computer System
-	int status = MsgReceive(csId, message, sizeof(message), NULL);
+ // Receive the message from the Computer System
+ int status = MsgReceive(csId, message, sizeof(message), NULL);
 
-	if (status == -1) {
-		std::cerr
-				<< "Error: Failed to receive message from the Computer System!"
-				<< std::endl;
-		return;
-	}
+ if (status == -1) {
+ std::cerr
+ << "Error: Failed to receive message from the Computer System!"
+ << std::endl;
+ return;
+ }
 
-	// Process the received message
-	std::string receivedMessage(message);
-	if (receivedMessage.find("Violation") != std::string::npos) {
-		std::cout << "Violation detected: " << receivedMessage << std::endl;
-		// Trigger alarm or handle the violation appropriately
-		// For example, display an alert to the operator:
-		displayInfo("ALARM: Aircraft Separation Violation!");
-	} else {
-		// No violation found, display regular info (optional)
-		std::cout << "Received from CS: " << receivedMessage << std::endl;
-	}
-}
-*/
+ // Process the received message
+ std::string receivedMessage(message);
+ if (receivedMessage.find("Violation") != std::string::npos) {
+ std::cout << "Violation detected: " << receivedMessage << std::endl;
+ // Trigger alarm or handle the violation appropriately
+ // For example, display an alert to the operator:
+ displayInfo("ALARM: Aircraft Separation Violation!");
+ } else {
+ // No violation found, display regular info (optional)
+ std::cout << "Received from CS: " << receivedMessage << std::endl;
+ }
+ }
+ */
 
 void* Operator::startOperator(void *arg) {
 

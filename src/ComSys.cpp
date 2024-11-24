@@ -125,7 +125,7 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 void ComSys::setAircraftList() {
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "Scanning..." << std::endl;
+		std::cout << "Receiving Aircraft" << std::endl;
 	}
 	std::string RadarName = "Radar_1";
 	int coid = name_open("Radar_1", 0);
@@ -152,8 +152,8 @@ void ComSys::setAircraftList() {
 //minimum Z=1000, X=3000, Y=3000
 void ComSys::checkViolations() {
 	{
-	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout << "Checking for Violations" << std::endl;
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "Checking for Violations" << std::endl;
 	}
 	for (int i = 0; i < TotalNumAircraft - 1; i++) {
 		for (int j = i + 1; j < TotalNumAircraft; j++) {
@@ -227,8 +227,8 @@ void ComSys::operatorAlert(int id_1, int id_2) {
 
 void ComSys::sendDataDisplay(int id) {
 	{
-	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout<<"sending data to Display"<<std::endl;
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "sending data to Display" << std::endl;
 	}
 	// Prepare the data
 	std::stringstream data;

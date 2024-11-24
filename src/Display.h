@@ -17,7 +17,6 @@ public:
 	void runDisplay();
 
 private:
-	name_attach_t *attach;
 	//Actual Display Grid
 		const int Z = 25000;
 		const int X = 100000;
@@ -25,7 +24,6 @@ private:
 		const int scaledZ= Z/1000;
 		const int scaledX = X/1000;
 
-		std::string* grid;
 		std::string buffer;
 };
 

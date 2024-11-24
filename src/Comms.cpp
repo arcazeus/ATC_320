@@ -91,8 +91,8 @@ void Comms::handleMessage(int rcvid, const char *msg) {
 
 void Comms::sendCommand() {
 	{
-	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout<<"sending command to aircraft"<<std::endl;
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "sending command to aircraft" << std::endl;
 	}
 	// Build the name for the aircraft
 	std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);

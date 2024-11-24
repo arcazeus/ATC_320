@@ -37,11 +37,11 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 				<< std::endl;
 		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 
-	} else if(receivedMessage == "DisplayRequest") {
+	} else if (receivedMessage == "DisplayRequest") {
 		std::lock_guard<std::mutex> lock(coutMutex);
-				std::cout << "Received ComSysRequest. Sending aircraft data..."
-						<< std::endl;
-				MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
+		std::cout << "Received ComSysRequest. Sending aircraft data..."
+				<< std::endl;
+		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 	}
 }
 
@@ -67,20 +67,24 @@ void Radar::runRadar() {
 			<< std::endl;
 
 	cTimer time = cTimer(1, 0);
+
+	int log =0;
 	time.startTimer();
 	while (1) {
-
 		time.tick();
 		scanForAircraft();
 		checkForMessages(attach);
-		storeAirSpaceHistory();
 		time.waitTimer();
 		time.tock();
-
+		if(log%30 == 0){
+		storeAirSpaceHistory();
+		}
+		log++;
 	}
 }
 
 void Radar::addAircraft(Aircraft plane) {
+
 	planes.push_back(plane);
 
 }
@@ -108,7 +112,6 @@ void Radar::scanForAircraft() {
 					<< ": " << strerror(errno) << std::endl;
 		} else {
 
-
 			// Add the new Aircraft to the vector
 			addAircraft(receivedAircraft);
 
@@ -129,6 +132,7 @@ void Radar::setAircraftIDs(const std::vector<int> &aircraftIDs) {
 }
 
 void Radar::storeAirSpaceHistory() {
+	cTimer log = cTimer(30,0);
 	std::ofstream outfile;
 	// Open the file in append mode
 	outfile.open(History, std::ios_base::app);
@@ -155,5 +159,6 @@ void Radar::storeAirSpaceHistory() {
 	}
 
 	Airspace.log_AirSpace(History, History);
+
 }
 
