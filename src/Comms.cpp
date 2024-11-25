@@ -43,14 +43,14 @@ void Comms::runComms() {
 	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Communication System started..." << std::endl;
 	}
-	/*// Register with the name service
+	// Register with the name service
 	name_attach_t *attach = name_attach(NULL, "commsServer", 0);
 	if (attach == NULL) {
 		std::cerr << "Error: Failed to register Comms with name service!"
 				<< std::endl;
 		return;
 	}
-*/
+
 	std::cout << "Comms " << 1 << " registered as commsServer" << std::endl;
 
 	cTimer time = cTimer(1, 0);
@@ -58,7 +58,7 @@ void Comms::runComms() {
 
 	while (true) {
 		time.tick();
-		//checkForMessage(attach);
+		checkForMessage(attach);
 		time.waitTimer();
 		time.tock();
 	}
@@ -66,18 +66,18 @@ void Comms::runComms() {
 }
 
 void Comms::checkForMessage(name_attach_t *attach) {
-/*
+
 	char msg[256];
 	int rcvid;
 	{
 	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout<<"Comms waiting for message"<<std::endl;
+	std::cout<<"Communication System waiting for message"<<std::endl;
 	}
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {
 		handleMessage(rcvid, msg);
-	}*/
+	}
 
 }
 
@@ -95,14 +95,14 @@ void Comms::handleMessage(int rcvid, const char *msg) {
 }
 
 void Comms::sendCommand() {
-	{
+/*	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "sending command to aircraft" << std::endl;
 	}
 	// Build the name for the aircraft
 	std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);
 
-/*
+
 	// Open a connection to the aircraft
 	int coid = name_open(aircraftName.c_str(), 0);
 	if (coid == -1) {
@@ -136,7 +136,7 @@ void Comms::sendCommand() {
 
 	// Close the connection
 	name_close(coid);
-*/
 
+*/
 }
 

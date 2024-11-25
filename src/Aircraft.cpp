@@ -103,7 +103,7 @@ void Aircraft::checkForMessages(name_attach_t *attach) {
 	int rcvid;
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "Aircraft waitinf for messages" << std::endl;
+		std::cout << "Aircraft waiting for messages" << std::endl;
 	}
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
@@ -137,6 +137,9 @@ void Aircraft::handleMessage(int rcvid, const char *msg) {
 	} else {
 		MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
 	}
+
+
+
 }
 
 void Aircraft::executeCommand(const std::string &command) {
