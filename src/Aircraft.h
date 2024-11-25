@@ -21,6 +21,8 @@ public:
     void executeCommand(const std::string& command);
     void checkForMessages(name_attach_t* attach);
 	void handleMessage(int rcvid, const char *msg);
+	void listenForCommands();
+
 
     // Getters
     float getTime() const;

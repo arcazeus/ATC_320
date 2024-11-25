@@ -114,35 +114,73 @@ void Aircraft::checkForMessages(name_attach_t *attach) {
 	}
 }
 
-void Aircraft::handleMessage(int rcvid, const char *msg) {
-	std::string receivedMessage(msg);
+//void Aircraft::handleMessage(int rcvid, const char *msg) {
+//	std::string receivedMessage(msg);
+//
+//	if (receivedMessage == "RadarRequest") {
+//		// Respond to Radar
+//		std::stringstream response;
+//		response << "ID:" << this->id << " X:" << this->xpost << " Y:"
+//				<< this->ypost << " Z:" << this->zpost << " SpeedX:"
+//				<< this->xspeed << " SpeedY:" << this->yspeed << " SpeedZ:"
+//				<< this->zspeed;
+//
+//		Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed,
+//				zspeed, time);
+//
+//		MsgReply(rcvid, 0, &data, sizeof(data));
+//	} else if (receivedMessage.find("Command:") == 0) {
+//		// Execute command
+//		std::string command = receivedMessage.substr(8);
+//		executeCommand(command);
+//
+//		// Acknowledge
+//		MsgReply(rcvid, 0, "Command Executed", strlen("Command Executed") + 1);
+//	} else {
+//		MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
+//	}
+//
+//
+//
+//}
 
-	if (receivedMessage == "RadarRequest") {
-		// Respond to Radar
-		std::stringstream response;
-		response << "ID:" << this->id << " X:" << this->xpost << " Y:"
-				<< this->ypost << " Z:" << this->zpost << " SpeedX:"
-				<< this->xspeed << " SpeedY:" << this->yspeed << " SpeedZ:"
-				<< this->zspeed;
+void Aircraft::listenForCommands() {
+    std::string aircraftName = "Aircraft_" + std::to_string(id);
+    name_attach_t *attach = name_attach(NULL, aircraftName.c_str(), 0);
+    if (attach == NULL) {
+        std::cerr << "Error: Failed to register Aircraft with name service!" << std::endl;
+        return;
+    }
 
-		Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed,
-				zspeed, time);
-
-		MsgReply(rcvid, 0, &data, sizeof(data));
-	} else if (receivedMessage.find("Command:") == 0) {
-		// Execute command
-		std::string command = receivedMessage.substr(8);
-		executeCommand(command);
-
-		// Acknowledge
-		MsgReply(rcvid, 0, "Command Executed", strlen("Command Executed") + 1);
-	} else {
-		MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
-	}
-
-
-
+    char msg[256];
+    while (true) {
+        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+        if (rcvid != -1) {
+            handleMessage(rcvid, msg);
+        }
+    }
 }
+
+void Aircraft::handleMessage(int rcvid, const char *msg) {
+    std::string receivedMessage(msg);
+
+    if (receivedMessage.find("RadarRequest") == 0) {
+        // Respond to Radar
+        Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed, zspeed, time);
+        MsgReply(rcvid, 0, &data, sizeof(data));
+    } else if (receivedMessage.find("ChangeSpeedY:") == 0) {
+        double newYspeed = std::stod(receivedMessage.substr(13));
+        yspeed = newYspeed;
+
+        std::cout << "Aircraft " << id << " Y-axis speed changed to " << newYspeed << std::endl;
+        MsgReply(rcvid, 0, "Y-axis Speed Changed", strlen("Y-axis Speed Changed") + 1);
+    } else {
+        MsgReply(rcvid, 0, "Unknown Command", strlen("Unknown Command") + 1);
+    }
+}
+
+
+
 
 void Aircraft::executeCommand(const std::string &command) {
 	{

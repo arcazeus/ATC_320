@@ -28,12 +28,9 @@ public:
     void handleMessage(int rcvid, const char *msg);
     static void* startOperator(void* arg);
     void runOperator();
-    //get data from user
-    // construct a msg from that
-    // isolate ID and use function that does send(R,m)
-    //send to Comms
-    void giveCommand(int aircraftID, int speed);
-    void send(int R, string m)
+    void sendCommandToComms(int aircraftID, const std::string &message);
+    void giveCommand(int ID);
+    void manualInputLoop();
 
 private:
 	Logger OperatorLog;

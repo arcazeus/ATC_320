@@ -76,26 +76,62 @@ void Comms::checkForMessage(name_attach_t *attach) {
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {
-		std::cout <<"I am in this section!! i can handle message now"<< endl;
+
 		handleMessage(rcvid, msg);
 	}
 
 }
 
+//void Comms::handleMessage(int rcvid, const char *msg) {
+//	std::string receivedMessage(msg);
+//
+//
+//	if (receivedMessage == "OperatorCommand") {
+//		std::stringstream response;
+//		response << this->aircraftID << this->command;
+//		sendCommandToAircraft(aircraftID, command);
+//
+//		MsgReply(rcvid, 0, &aircraftID, sizeof(aircraftID) + sizeof(command));
+//	}
+//}
+
+
 void Comms::handleMessage(int rcvid, const char *msg) {
-	std::string receivedMessage(msg);
-	std::cout <<"I am in this section"<< endl;
+    std::string receivedMessage(msg);
 
-	if (receivedMessage == "OperatorCommand") {
-		std::stringstream response;
-		response << this->aircraftID << this->command;
-		sendCommand();
+    size_t colonPos = receivedMessage.find(":");
+    if (colonPos == std::string::npos) {
+        MsgReply(rcvid, 0, "Invalid Message Format", strlen("Invalid Message Format") + 1);
+        return;
+    }
 
-		MsgReply(rcvid, 0, &aircraftID, sizeof(aircraftID) + sizeof(command));
-	}
+    int aircraftID = std::stoi(receivedMessage.substr(0, colonPos));
+    std::string command = receivedMessage.substr(colonPos + 1);
+
+    sendCommandToAircraft(aircraftID, command);
+
+    MsgReply(rcvid, 0, "Command Relayed", strlen("Command Relayed") + 1);
 }
 
-void Comms::sendCommand() {
+void Comms::sendCommandToAircraft(int aircraftID, const std::string &message) {
+    std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);
+
+    int coid = name_open(aircraftName.c_str(), 0);
+    if (coid == -1) {
+        std::cerr << "Error: Failed to connect to Aircraft " << aircraftID << std::endl;
+        return;
+    }
+
+    if (MsgSend(coid, message.c_str(), message.size() + 1, NULL, 0) == -1) {
+        std::cerr << "Error: Failed to send message to Aircraft " << aircraftID << std::endl;
+    } else {
+        std::cout << "Message sent to Aircraft " << aircraftID << ": " << message << std::endl;
+    }
+
+    name_close(coid);
+}
+
+//void Comms::sendCommand() {
 /*	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "sending command to aircraft" << std::endl;
@@ -139,5 +175,5 @@ void Comms::sendCommand() {
 	name_close(coid);
 
 */
-}
+//}
 
