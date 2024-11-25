@@ -48,7 +48,7 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 	}*/
 
 	else{
-		std::cout<<"NO REQUEST"<<std::endl;
+		std::cout<<"NO REQUEST FROM COMSYS"<<std::endl;
 	}
 }
 
@@ -111,9 +111,9 @@ void Radar::addAircraft(const Aircraft& plane) {
 	else {
 		// Add new Aircraft to the vector
 		planes.push_back(plane);
-		std::cout << "Added Aircraft ID: " << plane.getId()
+		/*std::cout << "Added Aircraft ID: " << plane.getId()
 				  << " SpeedX: " << plane.getSpeedX()
-				  << " PositionX: " << plane.getPositionX() << std::endl;
+				  << " PositionX: " << plane.getPositionX() << std::endl;*/
 	}
 }
 

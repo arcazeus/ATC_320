@@ -56,20 +56,18 @@ void ComSys::runComSys() {
 	/*std::thread listenerThread(&ComSys::listenForMessages, this, attach);
 	 listenerThread.detach(); // Allow it to run independently*/
 	cTimer time = cTimer(1, 0);
-	int parameterTimer =0;
+	int parameterTimer = 0;
 	time.startTimer();
 	while (true) {
 		time.tick();
 		time.waitTimer();
 
-		if(parameterTimer%30 == 0){
-		setParameterN();
+		if (parameterTimer % 30 == 0) {
+			setParameterN();
 		}
 		setAircraftList();
 		// Check for violations
 		checkViolations();
-		// Send data to Display
-		sendDataDisplayAllAircraft();
 		checkForMessages(attach);
 		parameterTimer++;
 		time.tock();
@@ -88,22 +86,6 @@ void ComSys::checkForMessages(name_attach_t *attach) {
 		handleMessage(rcvid, msg);
 
 	}
-}
-
-void ComSys::listenForMessages(name_attach_t *attach) {
-	/*while (true) {
-	 char msg[256]; // Buffer for received messages
-
-	 int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-
-	 if (rcvid != -1) {
-	 std::cout<<"ComSys is listening"<<std::endl;
-	 handleMessage(rcvid, msg);
-	 } else if (errno != EAGAIN) { // Ignore EAGAIN; handle other errors
-	 std::cerr << "Message reception failed: " << strerror(errno)
-	 << std::endl;
-	 }
-	 }*/
 }
 
 void ComSys::handleMessage(int rcvid, const char *msg) {
@@ -139,6 +121,7 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 		for (const auto &plane : aircraft) {
 			data << plane.getId() << " " << plane.getPositionX() << " "
 					<< plane.getPositionZ() << "\n";
+			strcpy(reply, "sent to Display");
 		}
 
 		// Send the full aircraft data back
@@ -151,7 +134,7 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 	}
 
 // Send a reply back to the sender
-	MsgReply(rcvid, 0, reply, strlen(reply) + 1);
+	//MsgReply(rcvid, 0, reply, strlen(reply) + 1);
 }
 
 void ComSys::setParameterN() {
@@ -176,7 +159,7 @@ void ComSys::setParameterN() {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		n = parameter;
 	}
-name_close(coid);
+	name_close(coid);
 }
 void ComSys::setAircraftList() {
 	{
@@ -216,8 +199,8 @@ void ComSys::setAircraftList() {
 		// Update the total number of aircraft
 		TotalNumAircraft = aircraft.size();
 
-		std::cout << "ComSys received " << TotalNumAircraft
-				<< " aircraft from Radar." << std::endl;
+		/*std::cout << "ComSys received " << TotalNumAircraft
+		 << " aircraft from Radar." << std::endl;*/
 	}
 
 	name_close(coid);
@@ -267,66 +250,22 @@ void ComSys::checkViolations() {
 			}
 		}
 	}
+	operatorAlert(0, 0);
 }
 
 void ComSys::operatorAlert(int id_1, int id_2) {
 
-	std::string alertMessage = "Violation detected between aircraft "
-			+ std::to_string(id_1) + " and aircraft " + std::to_string(id_2);
+	if (id_1 != id_2) {
+		std::string alertMessage = "Violation detected between aircraft "
+				+ std::to_string(id_1) + " and aircraft "
+				+ std::to_string(id_2);
+		state = alertMessage;
 
-	/*// Connect to the Operator
-	 int coid = name_open("DisplayServer", 0);
-	 if (coid == -1) {
-	 {
-	 std::lock_guard<std::mutex> lock(coutMutex);
-	 std::cerr << "Failed to connect to Display: " << strerror(errno)
-	 << std::endl;
-	 }
+	} else {
+		state = "No Violation detected";
 
-	 // Send the alert message
-	 if (MsgSend(coid, alertMessage.c_str(), alertMessage.size() + 1, NULL,
-	 0) == -1) {
-	 {
-	 std::lock_guard<std::mutex> lock(coutMutex);
-	 std::cerr << "Failed to send alert to Display: "
-	 << strerror(errno) << std::endl;
-	 }
-
-	 // Close the connection
-	 name_close(coid);
-	 }
-	 }*/
+	}
+	std::cout<<state<<std::endl;
 }
 
-void ComSys::sendDataDisplayAllAircraft() {
-	{
-		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "sending data to Display" << std::endl;
-	}
-
-// Prepare the data
-	std::stringstream data;
-	for (const auto &plane : aircraft) {
-		data << plane.getId() << " " << plane.getPositionX() << " "
-				<< plane.getPositionZ() << "\n";
-	}
-
-// Connect to the Display
-	int coid = name_open("DisplayServer", 0);
-	if (coid == -1) {
-		std::cerr << "Failed to connect to Display: " << strerror(errno)
-				<< std::endl;
-		return;
-	}
-
-// Send the data
-	std::string allData = data.str();
-	if (MsgSend(coid, allData.c_str(), allData.size() + 1, NULL, 0) == -1) {
-		std::cerr << "Failed to send data to Display: " << strerror(errno)
-				<< std::endl;
-	}
-// Close the connection
-	name_close(coid);
-
-}
 

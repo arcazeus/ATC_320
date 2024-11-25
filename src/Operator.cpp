@@ -75,13 +75,6 @@ void Operator::changeParameterN(int newN) {
 
 }
 
-// Method to request information about an aircraft
-void Operator::requestAircraftInfo(int aircraftID) {
-	std::cout << "Requesting information for aircraft " << aircraftID
-			<< std::endl;
-
-}
-
 // Private method to log the commands sent
 void Operator::logCommand(const std::string &command) {
 	if (logFile.is_open()) {
