@@ -36,7 +36,8 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 				<< std::endl;
 		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 
-	} else if (receivedMessage == "DisplayRequest") {
+	}
+	else if (receivedMessage == "DisplayRequest") {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Received ComSysRequest. Sending aircraft data..."
 				<< std::endl;

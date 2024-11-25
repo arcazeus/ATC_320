@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include "globals.h"
 #include "Logger.h"
+#include "cTimer.h"
 /////Constructors/////
 
 // OperatorConsole constructor
@@ -194,8 +195,11 @@ void* Operator::startOperator(void *arg) {
 }
 
 void Operator::runOperator() {
+	cTimer time = cTimer(5, 0);
+	time.startTimer();
 
 	 while (true) {
+		time.tick();
 		std::cout << "Enter a new value for Parameter N (-1 to skip): ";
 		int newN;
 		std::cin >> newN;
@@ -206,7 +210,8 @@ void Operator::runOperator() {
 			std::cout << "Skipping parameter change." << std::endl;
 		}
 
-		std::this_thread::sleep_for(std::chrono::seconds(5)); // Wait before prompting again
+		time.waitTimer();
+		time.tock(); // Wait before prompting again
 	}
 
 }
