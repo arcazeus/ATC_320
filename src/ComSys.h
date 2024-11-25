@@ -30,7 +30,7 @@ public:
 	void checkViolations();
 	void operatorAlert(int id_1, int id_2);
 	void sendDataDisplayAllAircraft();
-//	void sendDataDisplayAllAircraft();
+	void listenForMessages(name_attach_t *attach);
 	void setAircraftList();
 
 private:

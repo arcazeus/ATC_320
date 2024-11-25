@@ -186,34 +186,6 @@ void Operator::logCommand(const std::string &command) {
 }
 
 
-//void Operator::checkViolationFromCS() {
-//	// Buffer to store the message received from the Computer System
-//	char message[256];
-//	int csId = getConnectionId(); // Get the connection ID for the Computer System
-//
-//	// Receive the message from the Computer System
-//	int status = MsgReceive(csId, message, sizeof(message), NULL);
-//
-//	if (status == -1) {
-//		std::cerr
-//				<< "Error: Failed to receive message from the Computer System!"
-//				<< std::endl;
-//		return;
-//	}
-//
-//	// Process the received message
-//	std::string receivedMessage(message);
-//	if (receivedMessage.find("Violation") != std::string::npos) {
-//		std::cout << "Violation detected: " << receivedMessage << std::endl;
-//		// Trigger alarm or handle the violation appropriately
-//		// For example, display an alert to the operator:
-//		displayInfo("ALARM: Aircraft Separation Violation!");
-//	} else {
-//		// No violation found, display regular info (optional)
-//		std::cout << "Received from CS: " << receivedMessage << std::endl;
-//	}
-//}
-
 void* Operator::startOperator(void *arg) {
 
 	((Operator*) arg)->runOperator();
@@ -223,44 +195,18 @@ void* Operator::startOperator(void *arg) {
 
 void Operator::runOperator() {
 
-	name_attach_t *attach = name_attach(NULL, "operatorServer", 0);
-	if (attach == NULL) {
-		std::cerr << "Error: Failed to register Operator with name service!"
-				<< std::endl;
-		return;
-	}
+	 while (true) {
+		std::cout << "Enter a new value for Parameter N (-1 to skip): ";
+		int newN;
+		std::cin >> newN;
 
-	while (true) {
-		char msg[256];
-		int rcvid;
-
-		// Receive messages from the Computer System
-		rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-		if (rcvid == -1) {
-			std::cerr << "MsgReceive failed: " << strerror(errno) << std::endl;
-			continue;
-		}
-
-		// Process the received message
-		std::string receivedMessage(msg);
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cout << "Received message: " << receivedMessage << std::endl;
-		}
-
-		// Handle the message
-		if (receivedMessage.find("Violation") != std::string::npos) {
-			displayInfo("ALARM: Aircraft Separation Violation!");
-			// Log the violation
-			logCommand(receivedMessage);
+		if (newN >= 0) {
+			changeParameterN(newN); // Send the new value to ComSys
 		} else {
-			// Handle other messages if necessary
+			std::cout << "Skipping parameter change." << std::endl;
 		}
 
-		// Reply to the sender (if necessary)
-		MsgReply(rcvid, 0, NULL, 0);
+		std::this_thread::sleep_for(std::chrono::seconds(5)); // Wait before prompting again
 	}
-
-	name_detach(attach, 0);
 
 }

@@ -53,29 +53,14 @@ void* ComSys::startComSys(void *arg) {
 void ComSys::runComSys() {
 	std::cout << "ComSys running..." << std::endl;
 
-//	std::string ComSysName = "ComSys_" + std::to_string(2);
-//
-//	name_attach_t *attach = name_attach(NULL, ComSysName.c_str(), 0);
-//	if (attach == NULL) {
-//		std::cerr << "Error: Failed to register ComSys " << 2
-//				<< " with name service!" << std::endl;
-//		return;
-//	}
-//
-//	std::cout << "ComSys " << 1 << " registered as '" << 2 << "'." << std::endl;
+	std::thread listenerThread(&ComSys::listenForMessages, this, attach);
+	listenerThread.detach(); // Allow it to run independently
 
 	cTimer time = cTimer(1, 0);
 	time.startTimer();
 	while (true) {
 		time.tick();
-		/*char msg[256];        // Buffer for received messages
-		 int rcvid;            // Receive ID
 
-		 // Wait for a message from the Operator
-		 rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-		 if (rcvid != -1) {
-		 handleMessage(rcvid, msg);
-		 }*/
 		setAircraftList();
 		// Check for violations
 		checkViolations();
@@ -83,6 +68,19 @@ void ComSys::runComSys() {
 		sendDataDisplayAllAircraft();
 		time.tock();
 	}
+}
+
+void ComSys::listenForMessages(name_attach_t *attach) {
+    while (true) {
+        char msg[256]; // Buffer for received messages
+        int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+
+        if (rcvid != -1) {
+            handleMessage(rcvid, msg);
+        } else if (errno != EAGAIN) { // Ignore EAGAIN; handle other errors
+            std::cerr << "Message reception failed: " << strerror(errno) << std::endl;
+        }
+    }
 }
 
 void ComSys::handleMessage(int rcvid, const char *msg) {
@@ -104,10 +102,29 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 		}
 	} else if (receivedMessage.find("ChangeN") == 0) {
 		// Change the parameter n
-		n = std::stoi(receivedMessage.substr(7));
-		strcpy(reply, "Parameter n updated.");
-	} else {
-		strcpy(reply, "Error: Unknown command");
+		int newN = std::stoi(receivedMessage.substr(7)); // Extract the new N value
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			n = newN; // Update the parameter
+			std::cout << "Parameter N updated to: " << n << std::endl;
+		}
+		MsgReply(rcvid, 0, "Parameter updated successfully", 27);
+	} else if (receivedMessage == "DisplayRequest") {
+        // Handle request from Display for all aircraft data
+        std::stringstream data;
+        for (const auto &plane : aircraft) {
+            data << plane.getId() << " "
+                 << plane.getPositionX() << " "
+                 << plane.getPositionY() << " "
+                 << plane.getPositionZ() << "\n";
+        }
+
+        // Send the full aircraft data back
+        std::string response = data.str();
+        MsgReply(rcvid, 0, response.c_str(), response.size() + 1);
+
+    } else {
+		MsgReply(rcvid, 0, "Unknown command", 15);
 	}
 
 	// Send a reply back to the sender
@@ -127,18 +144,30 @@ void ComSys::setAircraftList() {
 		return;
 	}
 	const char *request = "ComSysRequest";
-	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
 
-	if (MsgSend(coid, request, strlen(request) + 1, PLANES.data(),
-			PLANES.size() * sizeof(Aircraft)) == -1) {
+	std::vector<Aircraft> tempPlanes(MAX_AIRCRAFTS); // Placeholder for incoming Aircraft data
+
+	if (MsgSend(coid, request, strlen(request) + 1, tempPlanes.data(), tempPlanes.size() * sizeof(Aircraft)) == -1) {
 		std::cerr << "Failed to receive data from Radar " << 1 << ": "
 				<< strerror(errno) << std::endl;
+		name_close(coid);
+		return;
 	} else {
-		// Add the new Aircraft to the vector
 		std::lock_guard<std::mutex> lock(coutMutex);
-		aircraft = PLANES;
+		// Update the aircraft vector and TotalNumAircraft
+		aircraft.clear();
+		for (const auto &plane : tempPlanes) {
+			if (plane.getId() == 0 && plane.getPositionX() == 0) {
+				// Stop processing when an invalid entry is encountered
+				break;
+			}
+			aircraft.push_back(plane);
+		}
+
+		// Update the total number of aircraft
 		TotalNumAircraft = aircraft.size();
 		std::cout << "ComSys received " << TotalNumAircraft << " aircraft from Radar." << std::endl;
+
 	}
 
 	name_close(coid);

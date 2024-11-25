@@ -83,7 +83,7 @@ void Display::updateDisplay() {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Display Updating" << std::endl;
 	}
-	int coid = name_open("Radar_1", 0);
+	int coid = name_open("computerSystemServer", 0);
 	if (coid == -1) {
 		std::cerr << "Failed to connect to ComSys_ " << 1 << ": "
 				<< strerror(errno) << std::endl;
@@ -91,6 +91,26 @@ void Display::updateDisplay() {
 	}
 	const char *request = "DisplayRequest";
 	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
+
+//	char receivedData[4096]; // Adjust size based on expected payload
+//	memset(receivedData, 0, sizeof(receivedData));
+
+//	if (MsgSend(coid, request, strlen(request) + 1, receivedData, sizeof(receivedData)) == -1) {
+//	    std::cerr << "Failed to receive data from ComSys: " << strerror(errno) << std::endl;
+//	} else {
+//	    std::lock_guard<std::mutex> lock(coutMutex);
+//
+//	    // Log the received raw data
+//	    std::cout << "Raw data received from ComSys: " << receivedData << std::endl;
+//
+//	    // Parse the received data
+//	    std::istringstream iss(receivedData);
+//	    std::string line;
+//	    while (std::getline(iss, line)) {
+//	        std::cout << "Parsed line: " << line << std::endl;
+//	    }
+//	}
+
 	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
 			PLANES.size() * sizeof(Aircraft)) == -1) {
 		std::cerr << "Failed to receive data from ComSys " << 1 << ": "

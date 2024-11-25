@@ -32,6 +32,10 @@
 #include "Display.h"
 #include "cTimer.h"
 
+Aircraft::Aircraft()
+    : id(0), xpost(0.0), ypost(0.0), zpost(0.0),
+      xspeed(0.0), yspeed(0.0), zspeed(0.0), time(0.0f) {}
+
 Aircraft::Aircraft(int id, double xpost, double ypost, double zpost,
 		double xspeed, double yspeed, double zspeed, float time) :
 		id(id), xpost(xpost), ypost(ypost), zpost(zpost), xspeed(xspeed), yspeed(
