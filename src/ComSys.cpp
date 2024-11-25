@@ -56,18 +56,22 @@ void ComSys::runComSys() {
 	/*std::thread listenerThread(&ComSys::listenForMessages, this, attach);
 	 listenerThread.detach(); // Allow it to run independently*/
 	cTimer time = cTimer(1, 0);
+	int parameterTimer =0;
 	time.startTimer();
 	while (true) {
 		time.tick();
 		time.waitTimer();
 
+		if(parameterTimer%30 == 0){
+		setParameterN();
+		}
 		setAircraftList();
 		// Check for violations
 		checkViolations();
 		// Send data to Display
 		sendDataDisplayAllAircraft();
 		checkForMessages(attach);
-
+		parameterTimer++;
 		time.tock();
 	}
 }
@@ -133,7 +137,8 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 		// Handle request from Display for all aircraft data
 		std::stringstream data;
 		for (const auto &plane : aircraft) {
-			data <<plane.getId()<<" "<< plane.getPositionX() << " " << plane.getPositionZ() << "\n";
+			data << plane.getId() << " " << plane.getPositionX() << " "
+					<< plane.getPositionZ() << "\n";
 		}
 
 		// Send the full aircraft data back
@@ -149,6 +154,30 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 	MsgReply(rcvid, 0, reply, strlen(reply) + 1);
 }
 
+void ComSys::setParameterN() {
+	std::string OperatorName = "Operator_1";
+	int coid = name_open("Operator_1", 0);
+	if (coid == -1) {
+		std::cerr << "Failed to connect to Radar " << 1 << ": "
+				<< strerror(errno) << std::endl;
+		return;
+	}
+
+	const char *request = "Parameter";
+	int parameter = 0;
+
+	if (MsgSend(coid, request, strlen(request) + 1, &parameter,
+			sizeof(parameter) == -1)) {
+		std::cerr << "Failed to receive data from Operator " << 1 << ": "
+				<< strerror(errno) << std::endl;
+		name_close(coid);
+		return;
+	} else {
+		std::lock_guard<std::mutex> lock(coutMutex);
+		n = parameter;
+	}
+name_close(coid);
+}
 void ComSys::setAircraftList() {
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
