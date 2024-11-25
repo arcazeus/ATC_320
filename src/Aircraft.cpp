@@ -69,11 +69,11 @@ void Aircraft::runAircraft() {
 	time.startTimer();
 	while (true) {
 		time.tick();
+		time.waitTimer();
 		// Check for messages
 		checkForMessages(attach);
 		// Update position
 		updatePosition();
-		time.waitTimer();
 		time.tock();
 	}
 

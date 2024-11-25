@@ -32,6 +32,7 @@ public:
 	void sendDataDisplayAllAircraft();
 	void listenForMessages(name_attach_t *attach);
 	void setAircraftList();
+	void setParameterN();
 
 private:
 	int TotalNumAircraft;

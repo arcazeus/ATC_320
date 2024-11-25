@@ -23,14 +23,11 @@ public:
     // Public member functions
     void sendCommandToAircraft(int aircraftID, const std::string& command);
     void requestAircraftInfo(int aircraftID);
-    void displayInfo(const std::string& info);
     void changeParameterN(int newN);
-    void checkViolationFromCS();
+    void checkForMessages(name_attach_t *attach);
+    void handleMessage(int rcvid, const char *msg);
     static void* startOperator(void* arg);
     void runOperator();
-
-    void setConnectionId(int connectionId);
-	int getConnectionId() const;
 
 private:
 	Logger OperatorLog;
