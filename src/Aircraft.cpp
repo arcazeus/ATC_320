@@ -101,10 +101,12 @@ void Aircraft::updatePosition() {
 void Aircraft::checkForMessages(name_attach_t *attach) {
 	char msg[256];
 	int rcvid;
+
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Aircraft waiting for messages" << std::endl;
 	}
+
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {

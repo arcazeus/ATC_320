@@ -69,9 +69,7 @@ void Display::runDisplay() {
 		 MsgReply(rcvid, 0, NULL, 0);
 		 }*/
 		time.tick();
-
 		updateDisplay();
-
 		time.waitTimer();
 		time.tock();
 	}
@@ -79,6 +77,7 @@ void Display::runDisplay() {
 	//name_detach(attach, 0);
 
 }
+
 
 void Display::checkForMessages(name_attach_t *attach) {
 
@@ -92,14 +91,13 @@ void Display::checkForMessages(name_attach_t *attach) {
 	 rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	 if (rcvid != -1) {
 	 handleMessages(rcvid, msg);
-	 }*/
-
+	 }
+	 */
 }
 
 void Display::handleMessages(int rcvid, const char *msg) {
-	/*
-	 std::string receivedMessage(msg);
-	 std::string message = "there is a potential collision";
+
+	/* std::string receivedMessage(msg);
 	 if (receivedMessage == "ComSysRequest") {
 	 // Respond to Radar
 	 std::cout << "there is a potential collision" << std::endl;
@@ -135,16 +133,14 @@ void Display::updateDisplay() {
 	} else {
 		std::lock_guard<std::mutex> lock(coutMutex);
 
-		// Log the received raw data
-		std::cout << "Raw data received from ComSys: " << receivedData
-				<< std::endl;
+
 
 		// Parse the received data
 		std::istringstream iss(receivedData);
 		std::string line;
 		std::vector<std::tuple<int, int, int>> aircraftPositions;
 		while (std::getline(iss, line)) {
-			std::cout << "Parsed line: " << line << std::endl;
+
 			int id, x, z;
 
 			std::istringstream linestream(line);
@@ -158,25 +154,28 @@ void Display::updateDisplay() {
 
 		for (const auto &pos : aircraftPositions) {
 
-			int x = std::get<1>(pos)/1000;
-			int z = std::get<2>(pos)/1000;
+			int x = std::get<1>(pos) / 1000;
+			int z = std::get<2>(pos) / 1000;
 
 			if (z >= 0 && z < scaledZ && x >= 0 && x < scaledX) {
 				grid[z][x] = 'P'; // 'P' for Plane
 			}
 		}
 
-			 for (int i = scaledZ - 1; i >= 0; --i) { // Top-down display
-			            std::cout << "|";
-			            for (int j = 0; j < scaledX; ++j) {
-			                std::cout << grid[i][j];
-			            }
-			            std::cout << "|" << std::endl;
-			        }
+		for (int i = scaledZ - 1; i >= 0; --i) { // Top-down display
+			std::cout << "|";
+			for (int j = 0; j < scaledX; ++j) {
+				std::cout << grid[i][j];
+			}
+			std::cout << "|" << std::endl;
+		}
 
 	}
 
-	name_close(coid);
+	{
+
+		name_close(coid);
+	}
 
 }
 
