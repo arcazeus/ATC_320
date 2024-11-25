@@ -76,6 +76,7 @@ void Comms::checkForMessage(name_attach_t *attach) {
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {
+		std::cout <<"I am in this section!! i can handle message now"<< endl;
 		handleMessage(rcvid, msg);
 	}
 
@@ -83,15 +84,15 @@ void Comms::checkForMessage(name_attach_t *attach) {
 
 void Comms::handleMessage(int rcvid, const char *msg) {
 	std::string receivedMessage(msg);
-/*
+	std::cout <<"I am in this section"<< endl;
+
 	if (receivedMessage == "OperatorCommand") {
-		// Respond to Radar
 		std::stringstream response;
 		response << this->aircraftID << this->command;
 		sendCommand();
 
 		MsgReply(rcvid, 0, &aircraftID, sizeof(aircraftID) + sizeof(command));
-	}*/
+	}
 }
 
 void Comms::sendCommand() {

@@ -28,6 +28,12 @@ public:
     void handleMessage(int rcvid, const char *msg);
     static void* startOperator(void* arg);
     void runOperator();
+    //get data from user
+    // construct a msg from that
+    // isolate ID and use function that does send(R,m)
+    //send to Comms
+    void giveCommand(int aircraftID, int speed);
+    void send(int R, string m)
 
 private:
 	Logger OperatorLog;

@@ -50,9 +50,13 @@ void Operator::handleMessage(int rcvid, const char *msg) {
 		std::cin >> newN;
 
 		MsgReply(rcvid, 0, &newN, sizeof(newN));
-	} else {
+	}
+
+	else {
 		MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
 	}
+
+
 }
 
 /////Aircraft related commands/////
@@ -93,6 +97,13 @@ void Operator::logCommand(const std::string &command) {
 
 	//OperatorLog.log_OperatorCommand(commands, commands);
 }
+
+void Operator::giveCommand()
+{
+
+
+}
+
 
 void* Operator::startOperator(void *arg) {
 
