@@ -32,6 +32,10 @@
 #include "Display.h"
 #include "cTimer.h"
 
+Aircraft::Aircraft()
+    : id(0), xpost(0.0), ypost(0.0), zpost(0.0),
+      xspeed(0.0), yspeed(0.0), zspeed(0.0), time(0.0f) {}
+
 Aircraft::Aircraft(int id, double xpost, double ypost, double zpost,
 		double xspeed, double yspeed, double zspeed, float time) :
 		id(id), xpost(xpost), ypost(ypost), zpost(zpost), xspeed(xspeed), yspeed(
@@ -53,9 +57,11 @@ void Aircraft::runAircraft() {
 				<< " with name service!" << std::endl;
 		return;
 	}
-
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Aircraft " << this->id << " registered as '" << aircraftName
 			<< "'." << std::endl;
+	}
 	cTimer time = cTimer(1, 0);
 	time.startTimer();
 	while (true) {
@@ -92,7 +98,10 @@ void Aircraft::updatePosition() {
 void Aircraft::checkForMessages(name_attach_t *attach) {
 	char msg[256];
 	int rcvid;
-
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+std::cout<<"Aircraft waitinf for messages"<<std::endl;
+	}
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {
@@ -207,6 +216,8 @@ void Aircraft::setZpost(double zp) {
 }
 
 void display(const Aircraft &aircraft) {
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Aircraft ID: " << aircraft.getId() << "\n" << "Time: "
 
 	<< aircraft.getTime() << "\n" << "X Speed: " << aircraft.getSpeedX() << "\n"
@@ -215,4 +226,5 @@ void display(const Aircraft &aircraft) {
 			<< aircraft.getPositionX() << "\n" << "Y Position: "
 			<< aircraft.getPositionY() << "\n" << "Z Position: "
 			<< aircraft.getPositionZ() << "\n";
+	}
 }

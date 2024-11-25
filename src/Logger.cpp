@@ -19,7 +19,7 @@ Logger::Logger() {
 	attach = name_attach(NULL, "LoggerServer", 0);
 	if (attach == NULL) {
 		std::cerr
-				<< "Error: Failed to register Computer System with name service in constructor!"
+				<< "Error: Failed to register Logger with name service in constructor!"
 				<< std::endl;
 		// Handle error appropriately (e.g., throw exception or set a flag)
 	} else {

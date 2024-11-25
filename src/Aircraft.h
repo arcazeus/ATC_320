@@ -11,6 +11,7 @@ using namespace std;
 #pragma pack(push, 1)
 class Aircraft {
 public:
+	Aircraft();
     // Constructor matching the parameters in main.cpp
     Aircraft(int id, double xpost, double ypost, double zpost, double xspeed, double yspeed, double zspeed, float time);
 

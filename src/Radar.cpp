@@ -19,6 +19,10 @@ Radar::Radar() {
 
 void Radar::checkForMessages(name_attach_t *attach) {
 	char msg[256];
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+	std::cout<<"Radar checking for Messages"<<std::endl;
+	}
 	int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 
 	if (rcvid != -1) {
@@ -50,9 +54,10 @@ void* Radar::startRadar(void *arg) {
 }
 
 void Radar::runRadar() {
-
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Radar running..." << std::endl;
-
+	}
 	std::string RadarName = "Radar_1";
 
 	name_attach_t *attach = name_attach(NULL, "Radar_1", 0);
@@ -84,7 +89,7 @@ void Radar::runRadar() {
 
 void Radar::addAircraft(const Aircraft& plane) {
 
-	std::lock_guard<std::mutex> lock(coutMutex);
+	//std::lock_guard<std::mutex> lock(coutMutex);
 
 	// Find if the Aircraft already exists in the planes vector
 	auto it = std::find_if(planes.begin(), planes.end(),

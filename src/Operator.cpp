@@ -13,12 +13,14 @@
 #include <unistd.h>
 #include "globals.h"
 #include "Logger.h"
+#include "cTimer.h"
 /////Constructors/////
 
 // OperatorConsole constructor
-Operator::Operator(): connectionId(-1) {
+Operator::Operator() :
+		connectionId(-1) {
 
-	logFile.open("logFile", std::ios_base::app);
+/*	logFile.open("logFile", std::ios_base::app);
 	while ((connectionId = name_open("computerSystemServer", 0)) == -1) {
 		{
 			std::lock_guard<std::mutex> lock(coutMutex);
@@ -42,14 +44,14 @@ Operator::Operator(): connectionId(-1) {
 			std::lock_guard<std::mutex> lock(coutMutex);
 			std::cout << "Operator Console initialized. Log file created."
 					<< std::endl;
-			logFile << "Operator Console started.\n";  // Log initialization event
+			logFile << "Operator Console started.\n"; // Log initialization event
 		}
 	} else {
 		{
 			std::lock_guard<std::mutex> lock(coutMutex);
 			std::cerr << "Error: Unable to open log file." << std::endl;
 		}
-	}
+	}*/
 
 }
 
@@ -57,13 +59,13 @@ Operator::Operator(): connectionId(-1) {
 Operator::~Operator() {
 
 //	std::ofstream logFile("logFile");
-	if (connectionId != -1) {
+	/*if (connectionId != -1) {
 		name_close(connectionId);
 	}
 	if (logFile.is_open()) {
 		logFile << "Operator Console shutting down.\n";  // Log shutdown event
 		logFile.close();  // Close the log file
-	}
+	}*/
 }
 
 /////Setters & Getters////
@@ -127,14 +129,15 @@ void Operator::changeParameterN(int newN) {
 				<< std::endl;
 		return;
 	}
-		std::string command = "ChangeN" + std::to_string(newN);
-		char response[256];
-		if (MsgSend(connectionId, command.c_str(), command.size() + 1, response, sizeof(response)) == -1) {
-			std::cerr << "Failed to send command to Computer System: "
-					<< strerror(errno) << std::endl;
-		} else{
-			std::cout << "Computer System response:" << response << std::endl;
-		}
+	std::string command = "ChangeN" + std::to_string(newN);
+	char response[256];
+	if (MsgSend(connectionId, command.c_str(), command.size() + 1, response,
+			sizeof(response)) == -1) {
+		std::cerr << "Failed to send command to Computer System: "
+				<< strerror(errno) << std::endl;
+	} else {
+		std::cout << "Computer System response:" << response << std::endl;
+	}
 }
 
 // Method to request information about an aircraft
@@ -185,35 +188,6 @@ void Operator::logCommand(const std::string &command) {
 	//OperatorLog.log_OperatorCommand(commands, commands);
 }
 
-
-//void Operator::checkViolationFromCS() {
-//	// Buffer to store the message received from the Computer System
-//	char message[256];
-//	int csId = getConnectionId(); // Get the connection ID for the Computer System
-//
-//	// Receive the message from the Computer System
-//	int status = MsgReceive(csId, message, sizeof(message), NULL);
-//
-//	if (status == -1) {
-//		std::cerr
-//				<< "Error: Failed to receive message from the Computer System!"
-//				<< std::endl;
-//		return;
-//	}
-//
-//	// Process the received message
-//	std::string receivedMessage(message);
-//	if (receivedMessage.find("Violation") != std::string::npos) {
-//		std::cout << "Violation detected: " << receivedMessage << std::endl;
-//		// Trigger alarm or handle the violation appropriately
-//		// For example, display an alert to the operator:
-//		displayInfo("ALARM: Aircraft Separation Violation!");
-//	} else {
-//		// No violation found, display regular info (optional)
-//		std::cout << "Received from CS: " << receivedMessage << std::endl;
-//	}
-//}
-
 void* Operator::startOperator(void *arg) {
 
 	((Operator*) arg)->runOperator();
@@ -222,45 +196,22 @@ void* Operator::startOperator(void *arg) {
 }
 
 void Operator::runOperator() {
-
-	name_attach_t *attach = name_attach(NULL, "operatorServer", 0);
-	if (attach == NULL) {
-		std::cerr << "Error: Failed to register Operator with name service!"
-				<< std::endl;
-		return;
-	}
-
+	cTimer time = cTimer(30, 0);
+	time.startTimer();
 	while (true) {
-		char msg[256];
-		int rcvid;
+		time.tick();
+		std::cout << "Enter a new value for Parameter N (-1 to skip): ";
+		int newN;
+		std::cin >> newN;
 
-		// Receive messages from the Computer System
-		rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-		if (rcvid == -1) {
-			std::cerr << "MsgReceive failed: " << strerror(errno) << std::endl;
-			continue;
-		}
-
-		// Process the received message
-		std::string receivedMessage(msg);
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cout << "Received message: " << receivedMessage << std::endl;
-		}
-
-		// Handle the message
-		if (receivedMessage.find("Violation") != std::string::npos) {
-			displayInfo("ALARM: Aircraft Separation Violation!");
-			// Log the violation
-			logCommand(receivedMessage);
+		if (newN >= 0) {
+			changeParameterN(newN); // Send the new value to ComSys
 		} else {
-			// Handle other messages if necessary
+			std::cout << "Skipping parameter change." << std::endl;
 		}
 
-		// Reply to the sender (if necessary)
-		MsgReply(rcvid, 0, NULL, 0);
+		time.waitTimer();
+		time.tock();
+
 	}
-
-	name_detach(attach, 0);
-
 }

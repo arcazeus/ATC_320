@@ -23,25 +23,11 @@ ComSys::ComSys() :
 		TotalNumAircraft(0), n(0) {
 	// Constructor implementation
 
-	// Register with the name service here
-	attach = name_attach(NULL, "computerSystemServer", 0);
-	if (attach == NULL) {
-		std::cerr
-				<< "Error: Failed to register Computer System with name service in constructor!"
-				<< std::endl;
-		// Handle error appropriately (e.g., throw exception or set a flag)
-	} else {
-		std::cout
-				<< "Computer System registered with name service in constructor."
-				<< std::endl;
-	}
+
 }
 
 ComSys::~ComSys() {
-	if (attach != NULL) {
-		name_detach(attach, 0);
-		attach = NULL;
-	}
+
 }
 
 void* ComSys::startComSys(void *arg) {
@@ -51,32 +37,31 @@ void* ComSys::startComSys(void *arg) {
 }
 
 void ComSys::runComSys() {
-	std::cout << "ComSys running..." << std::endl;
-
-	std::string ComSysName = "ComSys_1";
-
-	name_attach_t *attach = name_attach(NULL, "ComSys_1", 0);
-	if (attach == NULL) {
-		std::cerr << "Error: Failed to register ComSys " << 1
-				<< " with name service!" << std::endl;
-		return;
+	{
+		std::lock_guard<std::mutex> lock(coutMutex);
+		std::cout << "ComSys running..." << std::endl;
 	}
 
-	std::cout << "ComSys " << 1 << " registered as '" << 1 << "'." << std::endl;
+	// Register with the name service here
+	name_attach_t *attach = name_attach(NULL, "computerSystemServer", 0);
+	if (attach == NULL) {
+		std::cerr
+				<< "Error: Failed to register Computer System with name service in RUN!"
+				<< std::endl;
+		// Handle error appropriately (e.g., throw exception or set a flag)
+	} else {
+		std::cout
+				<< "Computer System registered with name service in constructor."
+				<< std::endl;
+	}
+	std::thread listenerThread(&ComSys::listenForMessages, this, attach);
+	listenerThread.detach(); // Allow it to run independently
 
 	cTimer time = cTimer(1, 0);
 	time.startTimer();
 	while (true) {
 		time.tick();
-		/*char msg[256];        // Buffer for received messages
-		 int rcvid;            // Receive ID
 
-		 // Wait for a message from the Operator
-		 rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-		 if (rcvid != -1) {
-		 handleMessage(rcvid, msg);
-		 }*/
-		checkForMessages(attach);
 		setAircraftList();
 		// Check for violations
 		checkViolations();
@@ -87,14 +72,34 @@ void ComSys::runComSys() {
 		time.tock();
 	}
 }
-void ComSys::checkForMessages(name_attach_t *t) {
+void ComSys::checkForMessages(name_attach_t *attach) {
 
 	char msg[256];
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+	std::cout<<"ComSys checking for messages"<<std::endl;
+	}
 	int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 
 	if (rcvid != -1) {
 		handleMessage(rcvid, msg);
 
+	}
+}
+
+void ComSys::listenForMessages(name_attach_t *attach) {
+	while (true) {
+		char msg[256]; // Buffer for received messages
+
+		int rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+
+		if (rcvid != -1) {
+			std::cout<<"ComSys is listening"<<std::endl;
+			handleMessage(rcvid, msg);
+		} else if (errno != EAGAIN) { // Ignore EAGAIN; handle other errors
+			std::cerr << "Message reception failed: " << strerror(errno)
+					<< std::endl;
+		}
 	}
 }
 
@@ -117,19 +122,30 @@ void ComSys::handleMessage(int rcvid, const char *msg) {
 		}
 	} else if (receivedMessage.find("ChangeN") == 0) {
 		// Change the parameter n
-		n = std::stoi(receivedMessage.substr(7));
-		strcpy(reply, "Parameter n updated.");
-	}
 
-	else if (receivedMessage.find("DisplayRequest") ==0) {
-		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "Received DisplayRequest. Sending aircraft data..."
-				<< std::endl;
-		MsgReply(rcvid, 0, aircraft.data(), aircraft.size() * sizeof(Aircraft));
-	}
+		int newN = std::stoi(receivedMessage.substr(7)); // Extract the new N value
+		{
+			std::lock_guard<std::mutex> lock(coutMutex);
+			n = newN; // Update the parameter
+			std::cout << "Parameter N updated to: " << n << std::endl;
+		}
+		MsgReply(rcvid, 0, "Parameter updated successfully", 27);
+	} else if (receivedMessage == "DisplayRequest") {
+		// Handle request from Display for all aircraft data
+		std::stringstream data;
+		for (const auto &plane : aircraft) {
+			data << plane.getId() << " " << plane.getPositionX() << " "
+					<< plane.getPositionY() << " " << plane.getPositionZ()
+					<< "\n";
+		}
 
-	else {
-		strcpy(reply, "Error: Unknown command");
+		// Send the full aircraft data back
+		std::string response = data.str();
+		MsgReply(rcvid, 0, response.c_str(), response.size() + 1);
+
+	} else {
+		MsgReply(rcvid, 0, "Unknown command", 15);
+
 	}
 
 // Send a reply back to the sender
@@ -149,17 +165,30 @@ void ComSys::setAircraftList() {
 		return;
 	}
 	const char *request = "ComSysRequest";
-	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
 
-	if (MsgSend(coid, request, strlen(request) + 1, PLANES.data(),
-			PLANES.size() * sizeof(Aircraft)) == -1) {
+	std::vector<Aircraft> tempPlanes(MAX_AIRCRAFTS); // Placeholder for incoming Aircraft data
+
+	if (MsgSend(coid, request, strlen(request) + 1, tempPlanes.data(),
+			tempPlanes.size() * sizeof(Aircraft)) == -1) {
 		std::cerr << "Failed to receive data from Radar " << 1 << ": "
 				<< strerror(errno) << std::endl;
+		name_close(coid);
+		return;
 	} else {
-		// Add the new Aircraft to the vector
 		std::lock_guard<std::mutex> lock(coutMutex);
-		aircraft = PLANES;
+		// Update the aircraft vector and TotalNumAircraft
+		aircraft.clear();
+		for (const auto &plane : tempPlanes) {
+			if (plane.getId() == 0 && plane.getPositionX() == 0) {
+				// Stop processing when an invalid entry is encountered
+				break;
+			}
+			aircraft.push_back(plane);
+		}
+
+		// Update the total number of aircraft
 		TotalNumAircraft = aircraft.size();
+
 		std::cout << "ComSys received " << TotalNumAircraft
 				<< " aircraft from Radar." << std::endl;
 	}
@@ -255,7 +284,7 @@ void ComSys::sendDataDisplayAllAircraft() {
 	}
 
 // Connect to the Display
-	int coid = name_open("displayServer", 0);
+	int coid = name_open("DisplayServer", 0);
 	if (coid == -1) {
 		std::cerr << "Failed to connect to Display: " << strerror(errno)
 				<< std::endl;

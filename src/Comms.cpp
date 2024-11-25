@@ -39,8 +39,10 @@ void* Comms::startComms(void *arg) {
 }
 
 void Comms::runComms() {
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
 	std::cout << "Communication System started..." << std::endl;
-
+	}
 	// Register with the name service
 	name_attach_t *attach = name_attach(NULL, "commsServer", 0);
 	if (attach == NULL) {
@@ -67,7 +69,10 @@ void Comms::checkForMessage(name_attach_t *attach) {
 
 	char msg[256];
 	int rcvid;
-
+	{
+	std::lock_guard<std::mutex> lock(coutMutex);
+	std::cout<<"Comms waiting for message"<<std::endl;
+	}
 	// Non-blocking receive
 	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
 	if (rcvid != -1) {
