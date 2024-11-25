@@ -97,7 +97,7 @@ void Operator::sendCommandToAircraft(int aircraftID,
 	// Log the command
 	logCommand(formattedCommand);
 
-	// Example communication with the Computer System (acting as a communication hub)
+	/*// Example communication with the Computer System (acting as a communication hub)
 	if (connectionId == -1) {
 		std::cerr << "Error: No valid connection to the Computer System!"
 				<< std::endl;
@@ -115,7 +115,7 @@ void Operator::sendCommandToAircraft(int aircraftID,
 	} else {
 		std::cout << "Received response from Computer System: " << response
 				<< std::endl;
-	}
+	}*/
 
 }
 
@@ -124,7 +124,7 @@ void Operator::changeParameterN(int newN) {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Changing Parameter N to:" << newN << std::endl;
 	}
-	if (connectionId == -1) {
+/*	if (connectionId == -1) {
 		std::cerr << "Failed to connect to Computer System: " << strerror(errno)
 				<< std::endl;
 		return;
@@ -137,7 +137,7 @@ void Operator::changeParameterN(int newN) {
 				<< strerror(errno) << std::endl;
 	} else {
 		std::cout << "Computer System response:" << response << std::endl;
-	}
+	}*/
 }
 
 // Method to request information about an aircraft
@@ -145,7 +145,7 @@ void Operator::requestAircraftInfo(int aircraftID) {
 	std::cout << "Requesting information for aircraft " << aircraftID
 			<< std::endl;
 
-	// Check if there is a valid connection to the Computer System
+	/*// Check if there is a valid connection to the Computer System
 	if (connectionId == -1) {
 		std::cerr << "Error: No valid connection to the Computer System!"
 				<< std::endl;
@@ -167,7 +167,7 @@ void Operator::requestAircraftInfo(int aircraftID) {
 	} else {
 		// Call displayInfo to show the received information
 		displayInfo(response);
-	}
+	}*/
 }
 
 // Method to display information (could be on the radar display or console)

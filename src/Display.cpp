@@ -27,6 +27,7 @@
 #include <sys/dispatch.h>
 #include "cTimer.h"
 #include "globals.h"
+#include <tuple>
 
 // Constructor
 Display::Display() {
@@ -47,12 +48,12 @@ void* Display::startDisplay(void *arg) {
 
 void Display::runDisplay() {
 
-	name_attach_t *attach = name_attach(NULL, "DisplayServer", 0);
-	if (attach == NULL) {
-		std::cerr << "Error: Failed to register Display with name service!"
-				<< std::endl;
-		return;
-	}
+	/*name_attach_t *attach = name_attach(NULL, "DisplayServer", 0);
+	 if (attach == NULL) {
+	 std::cerr << "Error: Failed to register Display with name service!"
+	 << std::endl;
+	 return;
+	 }*/
 	cTimer time = cTimer(5, 0);
 
 	time.startTimer();
@@ -75,36 +76,36 @@ void Display::runDisplay() {
 		time.tock();
 	}
 
-	name_detach(attach, 0);
+	//name_detach(attach, 0);
 
 }
 
 void Display::checkForMessages(name_attach_t *attach) {
 
-	char msg[256];
-	int rcvid;
-	{
-	std::lock_guard<std::mutex> lock(coutMutex);
-	std::cout<<"Display checking for messages"<<std::endl;
-	}
-	// Non-blocking receive
-	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
-	if (rcvid != -1) {
-		handleMessages(rcvid, msg);
-	}
+	/*char msg[256];
+	 int rcvid;
+	 {
+	 std::lock_guard<std::mutex> lock(coutMutex);
+	 std::cout<<"Display checking for messages"<<std::endl;
+	 }
+	 // Non-blocking receive
+	 rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+	 if (rcvid != -1) {
+	 handleMessages(rcvid, msg);
+	 }*/
 
 }
 
 void Display::handleMessages(int rcvid, const char *msg) {
+	/*
+	 std::string receivedMessage(msg);
+	 std::string message = "there is a potential collision";
+	 if (receivedMessage == "ComSysRequest") {
+	 // Respond to Radar
+	 std::cout << "there is a potential collision" << std::endl;
 
-	std::string receivedMessage(msg);
-	std::string message = "there is a potential collision";
-	if (receivedMessage == "ComSysRequest") {
-		// Respond to Radar
-		std::cout << "there is a potential collision" << std::endl;
-
-		MsgReply(rcvid, 0, &message, sizeof(message));
-	}
+	 MsgReply(rcvid, 0, &message, sizeof(message));
+	 }*/
 
 }
 
@@ -117,64 +118,64 @@ void Display::updateDisplay() {
 	int coid = name_open("computerSystemServer", 0);
 
 	if (coid == -1) {
-		std::cerr << "Failed to connect to ComSys" << 1 << ": " << strerror(errno)
-				<< std::endl;
+		std::cerr << "Failed to connect to ComSys" << 1 << ": "
+				<< strerror(errno) << std::endl;
 		return;
 	}
 	const char *request = "DisplayRequest";
 	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
 
-//	char receivedData[4096]; // Adjust size based on expected payload
-//	memset(receivedData, 0, sizeof(receivedData));
+	char receivedData[4096]; // Adjust size based on expected payload
+	memset(receivedData, 0, sizeof(receivedData));
 
-//	if (MsgSend(coid, request, strlen(request) + 1, receivedData, sizeof(receivedData)) == -1) {
-//	    std::cerr << "Failed to receive data from ComSys: " << strerror(errno) << std::endl;
-//	} else {
-//	    std::lock_guard<std::mutex> lock(coutMutex);
-//
-//	    // Log the received raw data
-//	    std::cout << "Raw data received from ComSys: " << receivedData << std::endl;
-//
-//	    // Parse the received data
-//	    std::istringstream iss(receivedData);
-//	    std::string line;
-//	    while (std::getline(iss, line)) {
-//	        std::cout << "Parsed line: " << line << std::endl;
-//	    }
-//	}
-
-	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
-			PLANES.size() * sizeof(Aircraft)) == -1) {
-		std::cerr << "Failed to receive data from ComSys_ " << 1 << ": "
-				<< strerror(errno) << std::endl;
+	if (MsgSend(coid, request, strlen(request) + 1, receivedData,
+			sizeof(receivedData)) == -1) {
+		std::cerr << "Failed to receive data from ComSys: " << strerror(errno)
+				<< std::endl;
 	} else {
-		std::vector<std::string> grid(scaledZ, std::string(scaledX, ' '));
+		std::lock_guard<std::mutex> lock(coutMutex);
 
-		// Add the new Aircraft to the vector
-		for (long unsigned int i = 0; i < PLANES.size(); i++) {
-			int gridX = PLANES[i].getPositionX() / 10000;
-			int gridZ = PLANES[i].getPositionZ() / 10000;
+		// Log the received raw data
+		std::cout << "Raw data received from ComSys: " << receivedData
+				<< std::endl;
 
-			if (gridX >= 0 && gridX < scaledX && gridZ >= 0
-					&& gridZ < scaledZ) {
+		// Parse the received data
+		std::istringstream iss(receivedData);
+		std::string line;
+		std::vector<std::tuple<int, int, int>> aircraftPositions;
+		while (std::getline(iss, line)) {
+			std::cout << "Parsed line: " << line << std::endl;
+			int id, x, z;
 
-				grid[gridZ][gridX] = '*';
+			std::istringstream linestream(line);
+			linestream >> id >> x >> z;
+			aircraftPositions.emplace_back(id, x, z);
+
+		}
+
+		std::vector<std::vector<char>> grid(scaledZ,
+				std::vector<char>(scaledX, '.'));
+
+		for (const auto &pos : aircraftPositions) {
+
+			int x = std::get<1>(pos)/1000;
+			int z = std::get<2>(pos)/1000;
+
+			if (z >= 0 && z < scaledZ && x >= 0 && x < scaledX) {
+				grid[z][x] = 'P'; // 'P' for Plane
 			}
 		}
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			for (int i = scaledZ - 1; i >= 0; i--) {
-				std::cout << "|";
-				buffer += "|";
-				for (int j = 0; j < scaledX; j++) {
-					std::cout << grid[i][j];
-					buffer += grid[i][j];
-				}
-				std::cout << "|" << std::endl;
 
-			}
-		}
+			 for (int i = scaledZ - 1; i >= 0; --i) { // Top-down display
+			            std::cout << "|";
+			            for (int j = 0; j < scaledX; ++j) {
+			                std::cout << grid[i][j];
+			            }
+			            std::cout << "|" << std::endl;
+			        }
+
 	}
+
 	name_close(coid);
 
 }

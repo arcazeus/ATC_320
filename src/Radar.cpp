@@ -40,11 +40,15 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 				<< std::endl;
 		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 
-	} else if (receivedMessage == "DisplayRequest") {
+	} /*else if (receivedMessage == "DisplayRequest") {
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Received DisplayRequest. Sending aircraft data..."
 				<< std::endl;
 		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
+	}*/
+
+	else{
+		std::cout<<"NO REQUEST"<<std::endl;
 	}
 }
 
@@ -76,9 +80,10 @@ void Radar::runRadar() {
 	time.startTimer();
 	while (1) {
 		time.tick();
+		time.waitTimer();
 		scanForAircraft();
 		checkForMessages(attach);
-		time.waitTimer();
+
 		time.tock();
 		if(log%30 == 0){
 		storeAirSpaceHistory();
@@ -106,9 +111,9 @@ void Radar::addAircraft(const Aircraft& plane) {
 	else {
 		// Add new Aircraft to the vector
 		planes.push_back(plane);
-	/*	std::cout << "Added Aircraft ID: " << plane.getId()
+		std::cout << "Added Aircraft ID: " << plane.getId()
 				  << " SpeedX: " << plane.getSpeedX()
-				  << " PositionX: " << plane.getPositionX() << std::endl;*/
+				  << " PositionX: " << plane.getPositionX() << std::endl;
 	}
 }
 
@@ -118,7 +123,8 @@ void Radar::scanForAircraft() {
 
 		std::cout << "Scanning..." << std::endl;
 	}
-//	planes.clear();
+
+	planes.clear();
 	for (int aircraftID : aircraftIDs) {
 		std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);
 		int coid = name_open(aircraftName.c_str(), 0);
