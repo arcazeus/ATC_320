@@ -25,7 +25,7 @@ public:
 	~ComSys();
 	static void* startComSys(void *arg);
 	void runComSys();
-
+	void checkForMessages(name_attach_t *t);
 	void handleMessage(int rcvid, const char *msg);
 	void checkViolations();
 	void operatorAlert(int id_1, int id_2);

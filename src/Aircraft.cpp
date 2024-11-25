@@ -80,10 +80,12 @@ void Aircraft::updatePosition() {
 		this->zpost += this->zspeed;
 
 		this->time += 1.0f;
+/*
 
 		std::cout << "Aircraft " << this->id << " at time " << this->time
 				<< " position updated to (" << this->xpost << ", "
 				<< this->ypost << ", " << this->zpost << ")." << std::endl;
+*/
 
 }
 

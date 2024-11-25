@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <sys/neutrino.h>
+#include <sys/dispatch.h>
 
 class Display {
 public:
@@ -15,6 +17,8 @@ public:
 	void updateDisplay();
 	static void* startDisplay(void*);
 	void runDisplay();
+	void checkForMessages(name_attach_t *t);
+	void handleMessages(int rcvid, const char *msg);
 
 private:
 	//Actual Display Grid
@@ -25,6 +29,7 @@ private:
 		const int scaledX = X/1000;
 
 		std::string buffer;
+		std::vector<char> grid;
 };
 
 #endif // DISPLAY_H

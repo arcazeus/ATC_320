@@ -182,7 +182,7 @@ void Operator::logCommand(const std::string &command) {
 		std::cerr << "Error: Log file is not open!" << std::endl;
 	}
 
-//	OperatorLog.log_OperatorCommand(commands, commands);
+	//OperatorLog.log_OperatorCommand(commands, commands);
 }
 
 

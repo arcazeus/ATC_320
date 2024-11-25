@@ -78,29 +78,56 @@ void Display::runDisplay() {
 
 }
 
+void Display::checkForMessages(name_attach_t *attach) {
+
+	char msg[256];
+	int rcvid;
+
+	// Non-blocking receive
+	rcvid = MsgReceive(attach->chid, msg, sizeof(msg), NULL);
+	if (rcvid != -1) {
+		handleMessages(rcvid, msg);
+	}
+
+}
+
+void Display::handleMessages(int rcvid, const char *msg) {
+
+	std::string receivedMessage(msg);
+	std::string message = "there is a potential collision";
+	if (receivedMessage == "ComSysRequest") {
+		// Respond to Radar
+		std::cout << "there is a potential collision" << std::endl;
+
+		MsgReply(rcvid, 0, &message, sizeof(message));
+	}
+
+}
+
 void Display::updateDisplay() {
 	{
 		std::lock_guard<std::mutex> lock(coutMutex);
 		std::cout << "Display Updating" << std::endl;
 	}
-	int coid = name_open("Radar_1", 0);
+	int coid = name_open("ComSys_1", 0);
 	if (coid == -1) {
-		std::cerr << "Failed to connect to ComSys_ " << 1 << ": "
-				<< strerror(errno) << std::endl;
+		std::cerr << "Failed to connect to ComSys" << 1 << ": " << strerror(errno)
+				<< std::endl;
 		return;
 	}
 	const char *request = "DisplayRequest";
 	std::vector<Aircraft> PLANES; // Placeholder for incoming Aircraft data
 	if (MsgSend(coid, request, strlen(request) + 1, &PLANES,
 			PLANES.size() * sizeof(Aircraft)) == -1) {
-		std::cerr << "Failed to receive data from ComSys " << 1 << ": "
+		std::cerr << "Failed to receive data from ComSys_ " << 1 << ": "
 				<< strerror(errno) << std::endl;
 	} else {
 		std::vector<std::string> grid(scaledZ, std::string(scaledX, ' '));
+
 		// Add the new Aircraft to the vector
 		for (long unsigned int i = 0; i < PLANES.size(); i++) {
-			int gridX = PLANES[i].getPositionX() / 1000;
-			int gridZ = PLANES[i].getPositionZ() / 1000;
+			int gridX = PLANES[i].getPositionX() / 10000;
+			int gridZ = PLANES[i].getPositionZ() / 10000;
 
 			if (gridX >= 0 && gridX < scaledX && gridZ >= 0
 					&& gridZ < scaledZ) {

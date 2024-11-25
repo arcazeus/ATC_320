@@ -86,9 +86,9 @@ int main() {
     // Random number generator setup
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> xDist(1, 100000); // X-position range
-    std::uniform_int_distribution<> yDist(1, 100000); // Y-position range
-    std::uniform_int_distribution<> zDist(1, 25000);  // Z-position range
+    std::uniform_int_distribution<> xDist(1, 1000); // X-position range
+    std::uniform_int_distribution<> yDist(1, 1000); // Y-position range
+    std::uniform_int_distribution<> zDist(1, 2500);  // Z-position range
     std::uniform_int_distribution<> speedDist(0, 1);  // Choose between 500 and 1000
 
     for (int i = 0; i < numberOfAircrafts; ++i) {

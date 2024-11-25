@@ -38,7 +38,7 @@ void Radar::handleMessage(int rcvid, const char *msg) {
 
 	} else if (receivedMessage == "DisplayRequest") {
 		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "Received ComSysRequest. Sending aircraft data..."
+		std::cout << "Received DisplayRequest. Sending aircraft data..."
 				<< std::endl;
 		MsgReply(rcvid, 0, planes.data(), planes.size() * sizeof(Aircraft));
 	}
@@ -86,11 +86,6 @@ void Radar::addAircraft(const Aircraft& plane) {
 
 	std::lock_guard<std::mutex> lock(coutMutex);
 
-<<<<<<< HEAD
-	planes.push_back(plane);
-	for(Aircraft i : planes){
-		std::cout<<i.getId()<<" "<<i.getPositionX()<<std::endl;
-=======
 	// Find if the Aircraft already exists in the planes vector
 	auto it = std::find_if(planes.begin(), planes.end(),
 						   [&](const Aircraft& a) { return a.getId() == plane.getId(); });
@@ -98,17 +93,17 @@ void Radar::addAircraft(const Aircraft& plane) {
 	if (it != planes.end()) {
 		// Update existing Aircraft data
 		*it = plane;
-		 std::cout << "Updated Aircraft ID: " << plane.getId()
+		/* std::cout << "Updated Aircraft ID: " << plane.getId()
 				  << " SpeedX: " << plane.getSpeedX()
 				  << " PositionX: " << plane.getPositionX() << std::endl;
->>>>>>> peter
+*/
 	}
 	else {
 		// Add new Aircraft to the vector
 		planes.push_back(plane);
-		std::cout << "Added Aircraft ID: " << plane.getId()
+	/*	std::cout << "Added Aircraft ID: " << plane.getId()
 				  << " SpeedX: " << plane.getSpeedX()
-				  << " PositionX: " << plane.getPositionX() << std::endl;
+				  << " PositionX: " << plane.getPositionX() << std::endl;*/
 	}
 }
 
