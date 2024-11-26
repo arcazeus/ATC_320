@@ -60,7 +60,7 @@ void Operator::handleMessage(int rcvid, const char *msg) {
         std::cout << "Collision detected between Aircraft " << aircraftID1
                   << " and Aircraft " << aircraftID2 << std::endl;
 
-        // Prompt for Y-axis speed adjustment commands
+        // Prompt for Z-axis speed adjustment commands
         giveCommand(aircraftID1);
         giveCommand(aircraftID2);
 

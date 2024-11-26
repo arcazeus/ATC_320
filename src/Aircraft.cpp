@@ -146,12 +146,12 @@ void Aircraft::handleMessage(int rcvid, const char *msg) {
     } else if (receivedMessage.find("ChangeSpeedZ:") == 0) {
     	std::cout<<"Previous Z Speed:" << getSpeedZ() << endl;
         double newYspeed = std::stod(receivedMessage.substr(13));
-        yspeed = newYspeed;
+        zspeed = newYspeed;
 
-        std::cout << "Aircraft " << id << " Y-axis speed changed to " << newYspeed << std::endl;
+        std::cout << "Aircraft " << id << " Z-axis speed changed to " << newYspeed << std::endl;
         this->setZspeed(yspeed);
         std::cout<<"AirCraft new speed: " << getSpeedZ();
-        MsgReply(rcvid, 0, "Y-axis Speed Changed", strlen("Y-axis Speed Changed") + 1);
+        MsgReply(rcvid, 0, "Z-axis Speed Changed", strlen("Z-axis Speed Changed") + 1);
     } else {
         MsgReply(rcvid, 0, "Unknown Command", strlen("Unknown Command") + 1);
     }
