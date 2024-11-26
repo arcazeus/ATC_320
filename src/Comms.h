@@ -23,7 +23,6 @@ public:
 	Comms();
 	static void* startComms(void *arg);
 	void runComms();
-	//void sendCommand();
 	void checkForMessage(name_attach_t *attach);
 	void handleMessage(int rcvid, const char *msg);
     void sendCommandToAircraft(int aircraftID, const std::string &message);

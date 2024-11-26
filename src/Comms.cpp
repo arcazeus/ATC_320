@@ -82,18 +82,6 @@ void Comms::checkForMessage(name_attach_t *attach) {
 
 }
 
-//void Comms::handleMessage(int rcvid, const char *msg) {
-//	std::string receivedMessage(msg);
-//
-//
-//	if (receivedMessage == "OperatorCommand") {
-//		std::stringstream response;
-//		response << this->aircraftID << this->command;
-//		sendCommandToAircraft(aircraftID, command);
-//
-//		MsgReply(rcvid, 0, &aircraftID, sizeof(aircraftID) + sizeof(command));
-//	}
-//}
 
 
 void Comms::handleMessage(int rcvid, const char *msg) {
@@ -131,49 +119,5 @@ void Comms::sendCommandToAircraft(int aircraftID, const std::string &message) {
     name_close(coid);
 }
 
-//void Comms::sendCommand() {
-/*	{
-		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "sending command to aircraft" << std::endl;
-	}
-	// Build the name for the aircraft
-	std::string aircraftName = "Aircraft_" + std::to_string(aircraftID);
 
-
-	// Open a connection to the aircraft
-	int coid = name_open(aircraftName.c_str(), 0);
-	if (coid == -1) {
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cerr << "Failed to connect to Aircraft " << aircraftID << ": "
-					<< strerror(errno) << std::endl;
-		}
-
-		return;
-	}
-
-	// Prefix the command with "Command:"
-	std::string fullCommand = "Command:" + command;
-
-	// Send the command
-	if (MsgSend(coid, fullCommand.c_str(), fullCommand.size() + 1, NULL, 0)
-			== -1) {
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cerr << "Failed to send command to Aircraft " << aircraftID
-					<< ": " << strerror(errno) << std::endl;
-		}
-	} else {
-		{
-			std::lock_guard<std::mutex> lock(coutMutex);
-			std::cout << "Command sent to Aircraft " << aircraftID << ": "
-					<< command << std::endl;
-		}
-	}
-
-	// Close the connection
-	name_close(coid);
-
-*/
-//}
 

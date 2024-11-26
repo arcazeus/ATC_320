@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "Logger.h"
 #include "cTimer.h"
+#include <chrono>
 /////Constructors/////
 
 // OperatorConsole constructor
@@ -108,16 +109,16 @@ void Operator::logCommand(const std::string &command) {
 void Operator::giveCommand(int aircraftID) {
     std::string message;
 
-    // Prompt for Y-axis speed adjustment
-    std::cout << "Enter Y-axis speed adjustment for Aircraft " << aircraftID << ": ";
+
+
+    // Prompt for z-axis speed adjustment
+    std::cout << "Enter Z-axis speed adjustment for Aircraft " << aircraftID << ": ";
     std::cin >> message;
 
-    // Clear input buffer
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
     // Send the command to Comms
-    sendCommandToComms(aircraftID, "ChangeSpeedY:" + message);
+    sendCommandToComms(aircraftID, "ChangeSpeedZ:" + message);
 }
+
 
 
 
@@ -144,6 +145,8 @@ void Operator::sendCommandToComms(int aircraftID, const std::string &message) {
 
 void Operator::manualInputLoop() {
     while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(5)); // Wait for 5 seconds before next prompt
+
         std::cout << "\nEnter 'M' to manually send a command or 'Q' to quit:\n";
         char choice;
         std::cin >> choice;
@@ -152,7 +155,6 @@ void Operator::manualInputLoop() {
             int aircraftID;
             std::cout << "Enter Aircraft ID for manual command: ";
             std::cin >> aircraftID;
-            std::cin.ignore(); // Clear input buffer
             giveCommand(aircraftID);
         } else if (choice == 'Q' || choice == 'q') {
             std::cout << "Operator shutting down manual input..." << std::endl;
@@ -162,6 +164,7 @@ void Operator::manualInputLoop() {
         }
     }
 }
+
 
 
 
@@ -189,72 +192,50 @@ void Operator::runOperator() {
     }
 
     int parameterTimer = 0;
-    int inputPromptTimer = 0;
-    bool processingViolation = false;
+    int inputPromptTimer = 0; // Timer for input prompts
 
     while (true) {
-        // Check for messages every 30 ticks if not processing violations
-        if (parameterTimer % 30 == 0 && !processingViolation) {
+        time.tick();
+
+        // Check for messages periodically (every 30 ticks)
+        if (parameterTimer % 30 == 0) {
             checkForMessages(attach);
         }
 
-        // Handle violations one at a time
-        if (processingViolation) {
-            std::cout << "\nViolation detected. Please resolve:\n";
-
-            // Prompt for aircraft IDs involved in the violation
-            int aircraftID1, aircraftID2;
-
-            // Wait for operator input for Aircraft IDs
-            std::cout << "Enter Aircraft ID 1: ";
-            std::cin >> aircraftID1;
-            std::cout << "Enter Aircraft ID 2: ";
-            std::cin >> aircraftID2;
-
-            // Prompt for Y-axis speed adjustments for each aircraft
-            giveCommand(aircraftID1);
-            giveCommand(aircraftID2);
-
-            // Reset the flag after handling
-            processingViolation = false;
-        }
-
-        // Prompt for manual input every 60 ticks if not processing violations
-        if (inputPromptTimer % 60 == 0 && !processingViolation) {
-            std::cout << "\nEnter 'M' to manually send a command or 'Q' to quit: ";
+        // Prompt for manual input every 10 seconds (adjustable)
+        if (inputPromptTimer % 10 == 0) {
+            std::cout << "\nEnter 'M' to manually send a command or 'Q' to quit:\n";
             char choice;
+
             std::cin >> choice;
 
             if (choice == 'M' || choice == 'm') {
                 int aircraftID;
                 std::cout << "Enter Aircraft ID for manual command: ";
                 std::cin >> aircraftID;
+
                 giveCommand(aircraftID);
             } else if (choice == 'Q' || choice == 'q') {
-                std::cout << "Operator shutting down..." << std::endl;
+                std::cout << "Operator shutting down manual input..." << std::endl;
                 break;
             } else {
                 std::cout << "Invalid choice. Please try again." << std::endl;
             }
         }
 
-        // Simulate violation detection for testing purposes
-        if (parameterTimer % 100 == 0 && !processingViolation) {
-            std::cout << "Violation detected between Aircraft 0 and Aircraft 1" << std::endl;
-            processingViolation = true; // Set the flag to pause other tasks
-        }
+        time.waitTimer();
+        time.tock();
 
-        // Increment timers
         parameterTimer++;
         inputPromptTimer++;
 
-        // Wait for the next tick
-        time.waitTimer();
-        time.tock();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     name_detach(attach, 0);
 }
+
 
 
 

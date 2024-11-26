@@ -65,6 +65,7 @@ void Aircraft::runAircraft() {
 				<< aircraftName << "'." << std::endl;
 	}
 
+
 	cTimer time = cTimer(1, 0);
 	time.startTimer();
 	while (true) {
@@ -89,6 +90,8 @@ void Aircraft::updatePosition() {
 	this->zpost += this->zspeed;
 
 	this->time += 1.0f;
+//    std::this_thread::sleep_for(std::chrono::seconds(2));
+//	display(*this);
 	/*
 
 	 std::cout << "Aircraft " << this->id << " at time " << this->time
@@ -114,35 +117,7 @@ void Aircraft::checkForMessages(name_attach_t *attach) {
 	}
 }
 
-//void Aircraft::handleMessage(int rcvid, const char *msg) {
-//	std::string receivedMessage(msg);
-//
-//	if (receivedMessage == "RadarRequest") {
-//		// Respond to Radar
-//		std::stringstream response;
-//		response << "ID:" << this->id << " X:" << this->xpost << " Y:"
-//				<< this->ypost << " Z:" << this->zpost << " SpeedX:"
-//				<< this->xspeed << " SpeedY:" << this->yspeed << " SpeedZ:"
-//				<< this->zspeed;
-//
-//		Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed,
-//				zspeed, time);
-//
-//		MsgReply(rcvid, 0, &data, sizeof(data));
-//	} else if (receivedMessage.find("Command:") == 0) {
-//		// Execute command
-//		std::string command = receivedMessage.substr(8);
-//		executeCommand(command);
-//
-//		// Acknowledge
-//		MsgReply(rcvid, 0, "Command Executed", strlen("Command Executed") + 1);
-//	} else {
-//		MsgReply(rcvid, 0, "Unknown Message", strlen("Unknown Message") + 1);
-//	}
-//
-//
-//
-//}
+
 
 void Aircraft::listenForCommands() {
     std::string aircraftName = "Aircraft_" + std::to_string(id);
@@ -168,11 +143,14 @@ void Aircraft::handleMessage(int rcvid, const char *msg) {
         // Respond to Radar
         Aircraft data = Aircraft(id, xpost, ypost, zpost, xspeed, yspeed, zspeed, time);
         MsgReply(rcvid, 0, &data, sizeof(data));
-    } else if (receivedMessage.find("ChangeSpeedY:") == 0) {
+    } else if (receivedMessage.find("ChangeSpeedZ:") == 0) {
+    	std::cout<<"Previous Z Speed:" << getSpeedZ() << endl;
         double newYspeed = std::stod(receivedMessage.substr(13));
         yspeed = newYspeed;
 
         std::cout << "Aircraft " << id << " Y-axis speed changed to " << newYspeed << std::endl;
+        this->setZspeed(yspeed);
+        std::cout<<"AirCraft new speed: " << getSpeedZ();
         MsgReply(rcvid, 0, "Y-axis Speed Changed", strlen("Y-axis Speed Changed") + 1);
     } else {
         MsgReply(rcvid, 0, "Unknown Command", strlen("Unknown Command") + 1);
@@ -261,16 +239,15 @@ void Aircraft::setZpost(double zp) {
 	zpost = zp;
 }
 
-void display(const Aircraft &aircraft) {
-	{
-		std::lock_guard<std::mutex> lock(coutMutex);
-		std::cout << "Aircraft ID: " << aircraft.getId() << "\n" << "Time: "
-
-		<< aircraft.getTime() << "\n" << "X Speed: " << aircraft.getSpeedX()
-				<< "\n" << "Y Speed: " << aircraft.getSpeedY() << "\n"
-				<< "Z Speed: " << aircraft.getSpeedZ() << "\n" << "X Position: "
-				<< aircraft.getPositionX() << "\n" << "Y Position: "
-				<< aircraft.getPositionY() << "\n" << "Z Position: "
-				<< aircraft.getPositionZ() << "\n";
-	}
-}
+//void Aircraft::display(const Aircraft &aircraft) {
+//	{
+//		std::cout << "Aircraft ID: " << aircraft.getId() << "\n" << "Time: "
+//
+//		<< aircraft.getTime() << "\n" << "X Speed: " << aircraft.getSpeedX()
+//				<< "\n" << "Y Speed: " << aircraft.getSpeedY() << "\n"
+//				<< "Z Speed: " << aircraft.getSpeedZ() << "\n" << "X Position: "
+//				<< aircraft.getPositionX() << "\n" << "Y Position: "
+//				<< aircraft.getPositionY() << "\n" << "Z Position: "
+//				<< aircraft.getPositionZ() << "\n";
+//	}
+//}

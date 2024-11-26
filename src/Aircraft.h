@@ -22,7 +22,7 @@ public:
     void checkForMessages(name_attach_t* attach);
 	void handleMessage(int rcvid, const char *msg);
 	void listenForCommands();
-
+	void display(const Aircraft &aircraft);
 
     // Getters
     float getTime() const;
